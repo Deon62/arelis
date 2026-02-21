@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner as a Lawyer – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-page">
+  <main class="lr-page">
+    <div class="lr-layout">
+      <div class="lr-hero">
+        <a href="index.html" class="lr-back" aria-label="Back to home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+        <div class="lr-hero-content">
+          <img src="assets/loogo.png" alt="The Foundry Africa" class="lr-logo">
+          <p class="lr-hero-brand">The Foundry Africa</p>
+          <h1 class="lr-hero-title">Your practice, supercharged by Arelis</h1>
+          <p class="lr-hero-lead">Join a curated network of Kenyan lawyers. Arelis — our AI — preps research, drafts briefs, and connects you with startups that need real legal help.</p>
+          <ul class="lr-perks">
+            <li>Steady client referrals from startups &amp; businesses</li>
+            <li>Arelis preps case briefs &amp; summaries for you</li>
+            <li>Flexible scheduling — you set your hours</li>
+            <li>Instant payouts via M-Pesa after each session</li>
+            <li>Grow your reputation with verified reviews</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="lr-form-side">
+        <div class="lr-form-card">
+          <h2 class="lr-form-title">Apply to join</h2>
+          <p class="lr-form-subtitle">We'll review your details and get back to you within 48 hours.</p>
+
+          <form class="lr-form" id="lr-form">
+            <div class="lr-row">
+              <div class="lr-field">
+                <label class="lr-label" for="lr-first">First name</label>
+                <input class="lr-input" type="text" id="lr-first" required placeholder="Jane">
+              </div>
+              <div class="lr-field">
+                <label class="lr-label" for="lr-last">Last name</label>
+                <input class="lr-input" type="text" id="lr-last" required placeholder="Mwangi">
+              </div>
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-email">Email</label>
+              <input class="lr-input" type="email" id="lr-email" required placeholder="jane@firm.co.ke">
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-phone">Phone number</label>
+              <div class="lr-phone-row">
+                <span class="lr-phone-prefix">+254</span>
+                <input class="lr-input lr-phone-input" type="tel" id="lr-phone" required placeholder="712 345 678" pattern="[0-9\s]{9,12}">
+              </div>
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-lsk">LSK admission number</label>
+              <input class="lr-input" type="text" id="lr-lsk" required placeholder="e.g. LSK/2019/12345">
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-years">Years of practice</label>
+              <select class="lr-input lr-select" id="lr-years" required>
+                <option value="" disabled selected>Select</option>
+                <option>0–2 years</option>
+                <option>3–5 years</option>
+                <option>6–10 years</option>
+                <option>10+ years</option>
+              </select>
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-areas">Areas of expertise</label>
+              <select class="lr-input lr-select" id="lr-areas" required>
+                <option value="" disabled selected>Select primary area</option>
+                <option>Company &amp; commercial law</option>
+                <option>Employment law</option>
+                <option>Contracts &amp; agreements</option>
+                <option>Compliance &amp; regulation</option>
+                <option>Intellectual property</option>
+                <option>Tax law</option>
+                <option>Dispute resolution</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-firm">Current firm / practice (optional)</label>
+              <input class="lr-input" type="text" id="lr-firm" placeholder="e.g. Mwangi & Associates">
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label" for="lr-bio">Brief bio</label>
+              <textarea class="lr-input lr-textarea" id="lr-bio" rows="3" required placeholder="Tell us about your practice and why you'd like to partner with us..."></textarea>
+            </div>
+
+            <div class="lr-field">
+              <label class="lr-label">Upload practising certificate (PDF)</label>
+              <label class="lr-file-label" id="lr-file-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span id="lr-file-text">Choose file</span>
+                <input type="file" id="lr-cert" accept=".pdf" class="lr-file-hidden">
+              </label>
+            </div>
+
+            <label class="lr-checkbox">
+              <input type="checkbox" required>
+              <span>I confirm the above details are accurate and I hold a valid practising certificate from the Law Society of Kenya.</span>
+            </label>
+
+            <button type="submit" class="lr-submit">Submit application</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      var form = document.getElementById('lr-form');
+      var fileInput = document.getElementById('lr-cert');
+      var fileText = document.getElementById('lr-file-text');
+
+      if (fileInput && fileText) {
+        fileInput.addEventListener('change', function() {
+          fileText.textContent = this.files.length ? this.files[0].name : 'Choose file';
+        });
+      }
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Thank you for your application. We will review your details and contact you within 48 hours.');
+          form.reset();
+          if (fileText) fileText.textContent = 'Choose file';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

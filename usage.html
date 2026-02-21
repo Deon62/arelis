@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usage – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo"><img src="assets/loogo.png" alt="The Foundry Africa" class="logo-img"></a>
+      <nav class="nav">
+        <a href="#" class="nav-avatar" aria-label="Account"><span class="nav-avatar-inner"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="ai-app">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="usage.html" class="ai-panel-nav-active">Usage</a>
+          <a href="ai.html">AI</a>
+          <a href="dashboard.html">Dashboard</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <div class="usage-page">
+        <h1 class="usage-title">Usage</h1>
+
+        <section class="usage-chart-section">
+          <h2 class="usage-section-title">Cost per day</h2>
+          <div class="usage-chart-wrap">
+            <div class="usage-chart-scale" aria-hidden="true">
+              <span>1,000</span>
+              <span>750</span>
+              <span>500</span>
+              <span>250</span>
+              <span>0</span>
+            </div>
+            <div class="usage-chart" id="usage-chart-container">
+              <div class="usage-chart-tooltip" id="usage-chart-tooltip" role="tooltip" aria-hidden="true"></div>
+              <svg class="usage-line-chart" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="usage-line-area" d="M0,70 L36,55 L73,62 L109,45 L145,38 L182,52 L218,30 L255,42 L291,48 L327,35 L364,58 L400,45 L400,100 L0,100 Z"/>
+                <polyline class="usage-line" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0,70 36,55 73,62 109,45 145,38 182,52 218,30 255,42 291,48 327,35 364,58 400,45"/>
+                <g class="usage-chart-points" id="usage-chart-points"></g>
+              </svg>
+            </div>
+          </div>
+          <div class="usage-chart-x-labels">
+            <span>Oct 5</span>
+            <span>Oct 15</span>
+            <span>Oct 25</span>
+            <span>Nov 1</span>
+          </div>
+        </section>
+
+        <section class="usage-activity">
+          <h2 class="usage-section-title">Activity</h2>
+          <div class="usage-table-wrap">
+            <table class="usage-table">
+              <thead>
+                <tr>
+                  <th>Session</th>
+                  <th>Type</th>
+                  <th>Duration</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Contract review – employment</td><td><span class="usage-tag">AI</span></td><td>3 min</td><td>KES 0</td></tr>
+                <tr><td>NDA draft – commercial</td><td><span class="usage-tag">AI</span></td><td>5 min</td><td>KES 0</td></tr>
+                <tr><td>Lawyer call – compliance</td><td><span class="usage-tag">Lawyer</span></td><td>45 min</td><td>KES 2,500</td></tr>
+                <tr><td>Company registration checklist</td><td><span class="usage-tag">AI</span></td><td>2 min</td><td>KES 0</td></tr>
+                <tr><td>Document review – shareholder agreement</td><td><span class="usage-tag">Lawyer</span></td><td>1h 15m</td><td>KES 5,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script>
+    (function() {
+      var data = [
+        { date: 'Oct 5', value: 300 },
+        { date: 'Oct 8', value: 450 },
+        { date: 'Oct 11', value: 380 },
+        { date: 'Oct 14', value: 550 },
+        { date: 'Oct 17', value: 620 },
+        { date: 'Oct 20', value: 480 },
+        { date: 'Oct 23', value: 700 },
+        { date: 'Oct 26', value: 580 },
+        { date: 'Oct 29', value: 520 },
+        { date: 'Nov 1', value: 650 },
+        { date: 'Nov 4', value: 420 },
+        { date: 'Nov 7', value: 550 }
+      ];
+      var points = [70,55,62,45,38,52,30,42,48,35,58,45];
+      var xs = [0,36,73,109,145,182,218,255,291,327,364,400];
+      var container = document.getElementById('usage-chart-container');
+      var tooltip = document.getElementById('usage-chart-tooltip');
+      var g = document.getElementById('usage-chart-points');
+      if (!container || !tooltip || !g) return;
+      points.forEach(function(y, i) {
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xs[i]);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', 12);
+        circle.setAttribute('class', 'usage-chart-dot');
+        circle.setAttribute('data-date', data[i].date);
+        circle.setAttribute('data-value', data[i].value);
+        circle.setAttribute('tabindex', 0);
+        circle.setAttribute('aria-label', data[i].date + ', KES ' + data[i].value);
+        g.appendChild(circle);
+      });
+      function showTooltip(el, x, y) {
+        var date = el.getAttribute('data-date');
+        var value = el.getAttribute('data-value');
+        tooltip.textContent = date + ' — KES ' + value;
+        tooltip.setAttribute('aria-hidden', 'false');
+        tooltip.classList.add('is-visible');
+        var rect = container.getBoundingClientRect();
+        var tipRect = tooltip.getBoundingClientRect();
+        var left = x - rect.left - (tipRect.width / 2);
+        left = Math.max(8, Math.min(left, rect.width - tipRect.width - 8));
+        var top = y - rect.top - tipRect.height - 10;
+        if (top < 8) top = y - rect.top + 14;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      }
+      function hideTooltip() {
+        tooltip.setAttribute('aria-hidden', 'true');
+        tooltip.classList.remove('is-visible');
+      }
+      container.addEventListener('mouseenter', function(e) {
+        if (e.target.classList.contains('usage-chart-dot')) showTooltip(e.target, e.clientX, e.clientY);
+      }, true);
+      container.addEventListener('mousemove', function(e) {
+        if (e.target.classList.contains('usage-chart-dot')) showTooltip(e.target, e.clientX, e.clientY);
+      }, true);
+      container.addEventListener('mouseleave', function() { hideTooltip(); }, true);
+      container.addEventListener('focus', function(e) {
+        if (e.target.classList.contains('usage-chart-dot')) showTooltip(e.target, e.target.getBoundingClientRect().left + 6, e.target.getBoundingClientRect().top);
+      }, true);
+      container.addEventListener('blur', function() { hideTooltip(); }, true);
+    })();
+  </script>
+</body>
+</html>

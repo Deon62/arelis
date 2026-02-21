@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lawyer Sessions – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+
+  <div class="ai-app">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="ai.html">AI</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="knowledge-base.html">Knowledge Base</a>
+          <a href="lawyer-sessions.html" class="ai-panel-nav-active">Lawyer Sessions</a>
+          <a href="billing.html">Billing</a>
+        </nav>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">My account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <div class="ls">
+        <div class="ls-grid">
+          <div class="ls-col-main">
+            <section class="ls-book">
+              <h2 class="ls-section-title">Book a session</h2>
+              <form class="ls-form" id="ls-form">
+                <div class="ls-form-row">
+                  <div class="ls-field">
+                    <label class="ls-label" for="ls-topic">Topic</label>
+                    <select class="ls-input ls-select" id="ls-topic" required>
+                      <option value="" disabled selected>Select a topic</option>
+                      <option>Company registration</option>
+                      <option>Contract review</option>
+                      <option>Employment law</option>
+                      <option>Compliance &amp; regulation</option>
+                      <option>Intellectual property</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div class="ls-field">
+                    <label class="ls-label" for="ls-date">Preferred date</label>
+                    <input class="ls-input" type="date" id="ls-date" required>
+                  </div>
+                </div>
+                <div class="ls-form-row">
+                  <div class="ls-field">
+                    <label class="ls-label" for="ls-time">Preferred time</label>
+                    <select class="ls-input ls-select" id="ls-time" required>
+                      <option value="" disabled selected>Select time</option>
+                      <option>09:00 AM</option>
+                      <option>10:00 AM</option>
+                      <option>11:00 AM</option>
+                      <option>12:00 PM</option>
+                      <option>02:00 PM</option>
+                      <option>03:00 PM</option>
+                      <option>04:00 PM</option>
+                    </select>
+                  </div>
+                  <div class="ls-field">
+                    <label class="ls-label" for="ls-notes">Notes (optional)</label>
+                    <textarea class="ls-input ls-textarea" id="ls-notes" rows="1" placeholder="Brief description..."></textarea>
+                  </div>
+                </div>
+                <div class="ls-form-footer">
+                  <button type="submit" class="ls-book-btn">Book session</button>
+                </div>
+              </form>
+            </section>
+
+            <section class="ls-upcoming">
+              <h2 class="ls-section-title">Upcoming</h2>
+              <div class="ls-session-list">
+                <div class="ls-session-card">
+                  <div class="ls-session-date">
+                    <span class="ls-session-day">15</span>
+                    <span class="ls-session-month">Nov</span>
+                  </div>
+                  <div class="ls-session-info">
+                    <span class="ls-session-topic">Contract review</span>
+                    <span class="ls-session-meta">10:00 AM · 30 min · Video call</span>
+                  </div>
+                  <span class="ls-session-status ls-status-confirmed">Confirmed</span>
+                </div>
+                <div class="ls-session-card">
+                  <div class="ls-session-date">
+                    <span class="ls-session-day">22</span>
+                    <span class="ls-session-month">Nov</span>
+                  </div>
+                  <div class="ls-session-info">
+                    <span class="ls-session-topic">Employment law</span>
+                    <span class="ls-session-meta">02:00 PM · 30 min · Video call</span>
+                  </div>
+                  <span class="ls-session-status ls-status-pending">Pending</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="ls-past">
+              <h2 class="ls-section-title">Past</h2>
+              <div class="ls-session-list">
+                <div class="ls-session-card ls-session-past">
+                  <div class="ls-session-date">
+                    <span class="ls-session-day">28</span>
+                    <span class="ls-session-month">Oct</span>
+                  </div>
+                  <div class="ls-session-info">
+                    <span class="ls-session-topic">Compliance &amp; regulation</span>
+                    <span class="ls-session-meta">11:00 AM · 30 min · Completed</span>
+                  </div>
+                  <span class="ls-session-status ls-status-done">Done</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="ls-col-side">
+            <div class="ls-pricing-card">
+              <div class="ls-pricing-top">
+                <span class="ls-pricing-amount">KES 2,500</span>
+                <span class="ls-pricing-per">per session</span>
+              </div>
+              <ul class="ls-pricing-features">
+                <li>30-minute video call</li>
+                <li>Kenyan-licensed lawyer</li>
+                <li>Session recording available</li>
+                <li>Follow-up notes via email</li>
+              </ul>
+              <div class="ls-pricing-pay">
+                <img src="assets/mpesa.png" alt="M-Pesa" class="ls-pricing-mpesa">
+                <span>Pay with M-Pesa</span>
+              </div>
+            </div>
+
+            <div class="ls-stats-card">
+              <div class="ls-stat">
+                <span class="ls-stat-value">4</span>
+                <span class="ls-stat-label">Sessions this month</span>
+              </div>
+              <div class="ls-stat">
+                <span class="ls-stat-value">2</span>
+                <span class="ls-stat-label">Remaining on plan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth-guard.js"></script>
+  <script>
+    (function() {
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          accountMenu.classList.toggle('is-open');
+        });
+        document.addEventListener('click', function() {
+          accountMenu.classList.remove('is-open');
+        });
+      }
+
+      var form = document.getElementById('ls-form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          alert('Session booking submitted. You will receive an M-Pesa payment prompt and confirmation.');
+          form.reset();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

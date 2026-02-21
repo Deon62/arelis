@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+
+  <div class="ai-app">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="ai.html">AI</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="knowledge-base.html">Knowledge Base</a>
+          <a href="lawyer-sessions.html">Lawyer Sessions</a>
+          <a href="billing.html" class="ai-panel-nav-active">Billing</a>
+        </nav>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">My account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <div class="bill">
+        <div class="bill-grid">
+          <div class="bill-col-main">
+            <section class="bill-card bill-method">
+              <div class="bill-method-head">
+                <h2 class="bill-card-title">Payment method</h2>
+                <img src="assets/mpesa.png" alt="M-Pesa" class="bill-mpesa-badge">
+              </div>
+              <div class="bill-method-current" id="bill-current-display">
+                <div class="bill-method-row">
+                  <img src="assets/mpesa.png" alt="M-Pesa" class="bill-method-logo">
+                  <div>
+                    <span class="bill-method-number" id="bill-display-number">0712 •••• 89</span>
+                    <span class="bill-method-label">Active M-Pesa number</span>
+                  </div>
+                </div>
+                <button type="button" class="bill-edit-btn" id="bill-edit-btn">Change</button>
+              </div>
+              <form class="bill-method-form" id="bill-method-form" style="display:none;">
+                <label class="bill-form-label" for="bill-phone">M-Pesa phone number</label>
+                <div class="bill-phone-row">
+                  <span class="bill-phone-prefix">+254</span>
+                  <input class="bill-phone-input" type="tel" id="bill-phone" placeholder="712 345 678" pattern="[0-9]{9,10}" required>
+                </div>
+                <div class="bill-form-actions">
+                  <button type="submit" class="bill-save-btn">Save number</button>
+                  <button type="button" class="bill-cancel-btn" id="bill-cancel-btn">Cancel</button>
+                </div>
+              </form>
+            </section>
+
+            <section class="bill-card">
+              <h2 class="bill-card-title">Billing history</h2>
+              <div class="bill-history">
+                <div class="bill-history-row">
+                  <div>
+                    <span class="bill-history-desc">Growth plan · Monthly</span>
+                    <span class="bill-history-date">Oct 1, 2025</span>
+                  </div>
+                  <span class="bill-history-amount">KES 7,500</span>
+                </div>
+                <div class="bill-history-row">
+                  <div>
+                    <span class="bill-history-desc">Lawyer session · Contract review</span>
+                    <span class="bill-history-date">Oct 15, 2025</span>
+                  </div>
+                  <span class="bill-history-amount">KES 2,500</span>
+                </div>
+                <div class="bill-history-row">
+                  <div>
+                    <span class="bill-history-desc">Growth plan · Monthly</span>
+                    <span class="bill-history-date">Sep 1, 2025</span>
+                  </div>
+                  <span class="bill-history-amount">KES 7,500</span>
+                </div>
+                <div class="bill-history-row">
+                  <div>
+                    <span class="bill-history-desc">Growth plan · Monthly</span>
+                    <span class="bill-history-date">Aug 1, 2025</span>
+                  </div>
+                  <span class="bill-history-amount">KES 7,500</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="bill-col-side">
+            <section class="bill-card bill-plan-card">
+              <h2 class="bill-card-title">Current plan</h2>
+              <span class="bill-plan-name">Growth</span>
+              <div class="bill-plan-price-block">
+                <span class="bill-plan-amount">KES 7,500</span>
+                <span class="bill-plan-period">/ month</span>
+              </div>
+              <ul class="bill-plan-perks">
+                <li>Unlimited AI queries</li>
+                <li>2 lawyer sessions / month</li>
+                <li>Priority support</li>
+              </ul>
+              <div class="bill-plan-detail">
+                <span>Next billing</span>
+                <span>Nov 1, 2025</span>
+              </div>
+              <div class="bill-plan-detail">
+                <span>Payment via</span>
+                <span class="bill-plan-via"><img src="assets/mpesa.png" alt="M-Pesa" class="bill-inline-mpesa"> M-Pesa</span>
+              </div>
+              <a href="pricing.html" class="bill-link">Change plan</a>
+            </section>
+
+            <div class="bill-card bill-spend-card">
+              <span class="bill-spend-label">Total this month</span>
+              <span class="bill-spend-amount">KES 10,000</span>
+              <span class="bill-spend-breakdown">Plan KES 7,500 + Sessions KES 2,500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth-guard.js"></script>
+  <script>
+    (function() {
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          accountMenu.classList.toggle('is-open');
+        });
+        document.addEventListener('click', function() {
+          accountMenu.classList.remove('is-open');
+        });
+      }
+
+      var editBtn = document.getElementById('bill-edit-btn');
+      var cancelBtn = document.getElementById('bill-cancel-btn');
+      var display = document.getElementById('bill-current-display');
+      var form = document.getElementById('bill-method-form');
+      var displayNumber = document.getElementById('bill-display-number');
+      var phoneInput = document.getElementById('bill-phone');
+
+      if (editBtn && form) {
+        editBtn.addEventListener('click', function() {
+          display.style.display = 'none';
+          form.style.display = 'block';
+          phoneInput.focus();
+        });
+        cancelBtn.addEventListener('click', function() {
+          form.style.display = 'none';
+          display.style.display = 'flex';
+        });
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var val = phoneInput.value.replace(/\s/g, '');
+          if (val.length >= 9) {
+            var masked = val.slice(0, 3) + ' \u2022\u2022\u2022\u2022 ' + val.slice(-2);
+            displayNumber.textContent = '0' + masked;
+            form.style.display = 'none';
+            display.style.display = 'flex';
+            phoneInput.value = '';
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

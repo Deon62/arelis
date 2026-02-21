@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+
+  <div class="ai-app">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="ai.html">AI</a>
+          <a href="dashboard.html" class="ai-panel-nav-active">Dashboard</a>
+          <a href="knowledge-base.html">Knowledge Base</a>
+          <a href="lawyer-sessions.html">Lawyer Sessions</a>
+          <a href="billing.html">Billing</a>
+        </nav>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">My account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <div class="db">
+
+        <div class="db-kpis">
+          <div class="db-kpi">
+            <span class="db-kpi-value">127</span>
+            <span class="db-kpi-label">AI queries</span>
+          </div>
+          <div class="db-kpi">
+            <span class="db-kpi-value">4</span>
+            <span class="db-kpi-label">Lawyer sessions</span>
+          </div>
+          <div class="db-kpi">
+            <span class="db-kpi-value">12</span>
+            <span class="db-kpi-label">Documents</span>
+          </div>
+          <div class="db-kpi">
+            <span class="db-kpi-value">KES 7,500</span>
+            <span class="db-kpi-label">Total spend</span>
+          </div>
+        </div>
+
+        <div class="db-mid">
+          <section class="db-card db-payment">
+            <h2 class="db-card-title">Payment</h2>
+            <div class="db-payment-row">
+              <span class="db-payment-icon" aria-hidden="true">
+                <img src="assets/mpesa.png" alt="M-Pesa" class="db-mpesa-logo">
+              </span>
+              <div>
+                <span class="db-payment-card">M-Pesa · 0712 •••• 89</span>
+                <span class="db-payment-exp">Active</span>
+              </div>
+            </div>
+            <div class="db-payment-detail">
+              <span>Last charged</span>
+              <span>KES 7,500 · Oct 1, 2025</span>
+            </div>
+            <div class="db-payment-detail">
+              <span>Next billing</span>
+              <span>Nov 1, 2025</span>
+            </div>
+            <a href="billing.html" class="db-link">Manage billing</a>
+          </section>
+
+          <section class="db-card db-plan">
+            <h2 class="db-card-title">Your plan</h2>
+            <p class="db-plan-badge">Growth</p>
+            <ul class="db-plan-features">
+              <li>Unlimited AI queries</li>
+              <li>2 lawyer sessions / month</li>
+              <li>Priority support</li>
+            </ul>
+            <div class="db-plan-price">
+              <span class="db-plan-amount">KES 7,500</span>
+              <span class="db-plan-period">/ month</span>
+            </div>
+            <a href="pricing.html" class="db-link">Change plan</a>
+          </section>
+        </div>
+
+        <section class="db-breakdown">
+          <h2 class="db-card-title">Usage breakdown</h2>
+          <div class="db-breakdown-content">
+            <div class="db-donut-wrap">
+              <div class="db-donut" aria-hidden="true">
+                <span class="db-donut-center">127</span>
+              </div>
+            </div>
+            <ul class="db-breakdown-legend">
+              <li>
+                <span class="db-legend-dot" style="background: #0F172A;"></span>
+                <span class="db-legend-label">Contracts</span>
+                <span class="db-legend-value">52</span>
+                <span class="db-legend-pct">41%</span>
+              </li>
+              <li>
+                <span class="db-legend-dot" style="background: #475569;"></span>
+                <span class="db-legend-label">Employment</span>
+                <span class="db-legend-value">31</span>
+                <span class="db-legend-pct">24%</span>
+              </li>
+              <li>
+                <span class="db-legend-dot" style="background: #94A3B8;"></span>
+                <span class="db-legend-label">Compliance</span>
+                <span class="db-legend-value">24</span>
+                <span class="db-legend-pct">19%</span>
+              </li>
+              <li>
+                <span class="db-legend-dot" style="background: #CBD5E1;"></span>
+                <span class="db-legend-label">Other</span>
+                <span class="db-legend-value">20</span>
+                <span class="db-legend-pct">16%</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="auth-guard.js"></script>
+  <script>
+    (function() {
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          accountMenu.classList.toggle('is-open');
+        });
+        document.addEventListener('click', function() {
+          accountMenu.classList.remove('is-open');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

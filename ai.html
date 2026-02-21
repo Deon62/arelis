@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arelis – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+
+  <div class="ai-app">
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <div class="ai-sidebar-top">
+          <nav class="ai-panel-nav">
+            <a href="ai.html" class="ai-panel-nav-active">AI</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="knowledge-base.html">Knowledge Base</a>
+            <a href="lawyer-sessions.html">Lawyer Sessions</a>
+            <a href="billing.html">Billing</a>
+          </nav>
+          <button type="button" class="ai-new-chat-icon" id="new-chat-btn" aria-label="New chat" title="New chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <h2 class="ai-sidebar-title">Chats</h2>
+        <ul class="ai-conversations" id="conversations-list"></ul>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">My account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="ai-main">
+      <div class="ai-chat">
+        <div class="ai-chat-messages" id="chat-messages"></div>
+        <form class="ai-chat-form" id="chat-form" aria-label="Send a message">
+          <input type="file" id="chat-file" class="ai-chat-file-input" accept="image/*,.pdf,.doc,.docx" multiple aria-label="Upload file or image">
+          <div class="ai-chat-input-wrap">
+            <button type="button" class="ai-chat-attach" id="chat-attach" aria-label="Upload file or image" title="Upload file or image">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <textarea class="ai-chat-input" id="chat-input" placeholder="Ask about Kenyan business law..." rows="1" maxlength="2000"></textarea>
+            <button type="submit" class="ai-chat-send" id="chat-send" aria-label="Send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth-guard.js"></script>
+  <script src="script.js"></script>
+  <script>
+    (function() {
+      var API = 'http://localhost:8001';
+      var form = document.getElementById('chat-form');
+      var input = document.getElementById('chat-input');
+      var messagesEl = document.getElementById('chat-messages');
+      var sendBtn = document.getElementById('chat-send');
+      var convListEl = document.getElementById('conversations-list');
+      var newChatBtn = document.getElementById('new-chat-btn');
+      var isSending = false;
+
+      var GREETING = "Hello, I'm Arelis, your AI legal assistant for Kenyan law. Ask me about company law, contracts, employment, compliance, or generate documents like terms of service and privacy policies. How can I help?";
+
+      var botAvatar = '<img src="assets/loogo.png" alt="" class="ai-avatar-logo">';
+      var userSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+      function safeParse(str, fallback) {
+        try { return JSON.parse(str); } catch(e) { return fallback; }
+      }
+
+      function escapeHtml(s) {
+        return String(s || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatBotText(raw) {
+        var text = String(raw || '').replace(/\r\n/g, '\n');
+
+        // Remove markdown bold markers
+        text = text.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*\*/g, '');
+
+        var lines = text.split('\n');
+        var out = [];
+        var par = [];
+
+        function flushPar() {
+          if (!par.length) return;
+          var joined = par.join(' ').trim();
+          if (joined) out.push('<p>' + escapeHtml(joined) + '</p>');
+          par.length = 0;
+        }
+
+        for (var i = 0; i < lines.length; ) {
+          var line = (lines[i] || '').trim();
+
+          if (!line) {
+            flushPar();
+            i++;
+            continue;
+          }
+
+          // Headings: "# Title", "### Title" etc.
+          if (/^#{1,6}\s*/.test(line)) {
+            flushPar();
+            var m = line.match(/^(#{1,6})\s*(.*)$/);
+            var lvl = m ? m[1].length : 3;
+            var title = (m ? m[2] : line).trim();
+            if (title) {
+              out.push('<p class="ai-md-heading ai-md-h' + lvl + '"><strong>' + escapeHtml(title) + '</strong></p>');
+            }
+            i++;
+            continue;
+          }
+
+          // Unordered list: "- item" / "* item"
+          if (/^[-*]\s+/.test(line)) {
+            flushPar();
+            out.push('<ul>');
+            while (i < lines.length) {
+              var l = (lines[i] || '').trim();
+              if (!l) break;
+              if (!/^[-*]\s+/.test(l)) break;
+              out.push('<li>' + escapeHtml(l.replace(/^[-*]\s+/, '').trim()) + '</li>');
+              i++;
+            }
+            out.push('</ul>');
+            continue;
+          }
+
+          // Ordered list: "1. item"
+          if (/^\d+\.\s+/.test(line)) {
+            flushPar();
+            out.push('<ol>');
+            while (i < lines.length) {
+              var o = (lines[i] || '').trim();
+              if (!o) break;
+              if (!/^\d+\.\s+/.test(o)) break;
+              out.push('<li>' + escapeHtml(o.replace(/^\d+\.\s+/, '').trim()) + '</li>');
+              i++;
+            }
+            out.push('</ol>');
+            continue;
+          }
+
+          par.push(line);
+          i++;
+        }
+
+        flushPar();
+        return out.join('');
+      }
+
+      function getUserId() {
+        var u = safeParse(localStorage.getItem('fa_user') || '', null);
+        return (u && (u.id || u.email)) ? String(u.id || u.email) : 'anon';
+      }
+
+      var userId = getUserId();
+      var STORAGE_KEY = 'fa_conversations_' + userId;
+      var CURRENT_KEY = 'fa_current_conversation_' + userId;
+
+      function loadConversations() {
+        var data = safeParse(localStorage.getItem(STORAGE_KEY) || '[]', []);
+        return Array.isArray(data) ? data : [];
+      }
+
+      function saveConversations(convs) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(convs || []));
+      }
+
+      function getCurrentConversationId() {
+        return localStorage.getItem(CURRENT_KEY) || '';
+      }
+
+      function setCurrentConversationId(id) {
+        localStorage.setItem(CURRENT_KEY, id);
+      }
+
+      function newId() {
+        return (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)).toUpperCase();
+      }
+
+      function createConversation() {
+        return {
+          id: newId(),
+          title: 'New chat',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          messages: [{ role: 'assistant', content: GREETING, ts: Date.now() }]
+        };
+      }
+
+      function getActiveConversation(convs) {
+        var activeId = getCurrentConversationId();
+        var active = convs.find(function(c) { return c.id === activeId; });
+        if (active) return active;
+        if (convs.length) {
+          setCurrentConversationId(convs[0].id);
+          return convs[0];
+        }
+        var c = createConversation();
+        convs.unshift(c);
+        saveConversations(convs);
+        setCurrentConversationId(c.id);
+        return c;
+      }
+
+      function addMessage(text, isUser) {
+        var wrap = document.createElement('div');
+        wrap.className = 'ai-msg ' + (isUser ? 'ai-msg-user' : 'ai-msg-bot');
+
+        var avatar = document.createElement('span');
+        avatar.className = 'ai-avatar ' + (isUser ? 'ai-avatar-user' : 'ai-avatar-bot');
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.innerHTML = isUser ? userSvg : botAvatar;
+
+        var content = document.createElement('div');
+        content.className = 'ai-msg-content';
+        if (isUser) {
+          content.textContent = text;
+        } else {
+          content.innerHTML = formatBotText(text);
+          wrap.dataset.raw = String(text || '');
+        }
+
+        wrap.appendChild(avatar);
+        wrap.appendChild(content);
+
+        var copyBtn = null;
+        if (!isUser) {
+          copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.className = 'ai-copy-btn';
+          copyBtn.setAttribute('aria-label', 'Copy response');
+          copyBtn.setAttribute('title', 'Copy');
+          copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          wrap.appendChild(copyBtn);
+        }
+
+        messagesEl.appendChild(wrap);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return { wrap: wrap, content: content, copyBtn: copyBtn };
+      }
+
+      async function copyToClipboard(text) {
+        var t = String(text || '').trim();
+        if (!t) return false;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(t);
+          return true;
+        }
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = t;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return ok;
+        } catch (e) {
+          document.body.removeChild(ta);
+          return false;
+        }
+      }
+
+      function renderMessages(conv) {
+        if (!messagesEl) return;
+        messagesEl.innerHTML = '';
+        (conv.messages || []).forEach(function(m) {
+          addMessage(m.content, m.role === 'user');
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function renderConversationList(convs) {
+        if (!convListEl) return;
+        var activeId = getCurrentConversationId();
+        convListEl.innerHTML = '';
+
+        convs.forEach(function(c) {
+          var li = document.createElement('li');
+          li.className = 'ai-conv-item' + (c.id === activeId ? ' is-active' : '');
+          li.setAttribute('data-id', c.id);
+
+          var a = document.createElement('a');
+          a.href = '#';
+          a.className = 'ai-conv-link';
+          a.textContent = c.title || 'New chat';
+
+          var dots = document.createElement('button');
+          dots.type = 'button';
+          dots.className = 'ai-conv-dots';
+          dots.setAttribute('aria-label', 'Chat options');
+          dots.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+
+          var menu = document.createElement('div');
+          menu.className = 'ai-conv-menu';
+          menu.innerHTML = '<button type="button" class="ai-conv-menu-item" data-action="rename">Rename</button><button type="button" class="ai-conv-menu-item ai-conv-menu-delete" data-action="delete">Delete</button>';
+
+          li.appendChild(a);
+          li.appendChild(dots);
+          li.appendChild(menu);
+          convListEl.appendChild(li);
+        });
+      }
+
+      function boot() {
+        var convs = loadConversations();
+        var active = getActiveConversation(convs);
+        renderConversationList(convs);
+        renderMessages(active);
+      }
+
+      function setActiveConversation(id) {
+        var convs = loadConversations();
+        var target = convs.find(function(c) { return c.id === id; });
+        if (!target) return;
+        setCurrentConversationId(id);
+        renderConversationList(convs);
+        renderMessages(target);
+      }
+
+      function upsertConversation(conv) {
+        var convs = loadConversations();
+        var idx = convs.findIndex(function(c) { return c.id === conv.id; });
+        if (idx >= 0) convs[idx] = conv;
+        else convs.unshift(conv);
+
+        convs.sort(function(a, b) { return (b.updatedAt || 0) - (a.updatedAt || 0); });
+        saveConversations(convs);
+        renderConversationList(convs);
+      }
+
+      async function sendMessage() {
+        var text = (input.value || '').trim();
+        if (!text || isSending) return;
+
+        isSending = true;
+        if (sendBtn) sendBtn.disabled = true;
+
+        var convs = loadConversations();
+        var conv = getActiveConversation(convs);
+
+        addMessage(text, true);
+        conv.messages = conv.messages || [];
+        conv.messages.push({ role: 'user', content: text, ts: Date.now() });
+        conv.updatedAt = Date.now();
+
+        if (!conv.title || conv.title === 'New chat') {
+          conv.title = text.length > 28 ? (text.slice(0, 28) + '…') : text;
+        }
+
+        upsertConversation(conv);
+
+        input.value = '';
+        input.style.height = 'auto';
+
+        var botMsg = addMessage('Thinking…', false);
+        botMsg.content.classList.add('ai-msg-thinking');
+        botMsg.wrap.classList.add('is-thinking');
+        if (botMsg.copyBtn) botMsg.copyBtn.disabled = true;
+        var dots = 0;
+        var thinkingTimer = setInterval(function() {
+          dots = (dots + 1) % 4;
+          botMsg.content.textContent = 'Thinking' + (dots ? Array(dots + 1).join('.') : '') + '…';
+        }, 420);
+
+        var fullResponse = '';
+        var receivedAnyToken = false;
+        var renderTimer = null;
+
+        function isNearBottom() {
+          if (!messagesEl) return true;
+          var gap = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+          return gap < 80;
+        }
+
+        function queueStreamingRender() {
+          if (!botMsg || !botMsg.content) return;
+          if (renderTimer) return;
+          var stick = isNearBottom();
+          renderTimer = setTimeout(function() {
+            renderTimer = null;
+            botMsg.content.innerHTML = formatBotText(fullResponse);
+            if (stick) messagesEl.scrollTop = messagesEl.scrollHeight;
+          }, 60);
+        }
+
+        try {
+          var token = localStorage.getItem('fa_token');
+          var res = await fetch(API + '/api/chat/stream', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ messages: conv.messages })
+          });
+
+          if (!res.ok) {
+            var err = await res.json();
+            throw new Error(err.detail || 'Request failed');
+          }
+
+          var reader = res.body.getReader();
+          var decoder = new TextDecoder();
+          var buffer = '';
+
+          while (true) {
+            var result = await reader.read();
+            if (result.done) break;
+
+            buffer += decoder.decode(result.value, { stream: true });
+            var lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i].trim();
+              if (!line.startsWith('data: ')) continue;
+              var payload = line.slice(6);
+              if (payload === '[DONE]') continue;
+              try {
+                var chunk = JSON.parse(payload);
+                if (chunk.token) {
+                  if (!receivedAnyToken) {
+                    receivedAnyToken = true;
+                    clearInterval(thinkingTimer);
+                    botMsg.content.classList.remove('ai-msg-thinking');
+                    botMsg.content.textContent = '';
+                    botMsg.wrap.classList.remove('is-thinking');
+                    if (botMsg.copyBtn) botMsg.copyBtn.disabled = false;
+                  }
+                  fullResponse += chunk.token;
+                  botMsg.wrap.dataset.raw = fullResponse;
+                  queueStreamingRender();
+                }
+              } catch(e) {}
+            }
+          }
+
+          if (!fullResponse) {
+            fullResponse = 'Sorry, I could not generate a response. Please try again.';
+            botMsg.content.classList.remove('ai-msg-thinking');
+            botMsg.content.textContent = fullResponse;
+            botMsg.wrap.dataset.raw = fullResponse;
+            botMsg.wrap.classList.remove('is-thinking');
+            if (botMsg.copyBtn) botMsg.copyBtn.disabled = false;
+          } else {
+            botMsg.content.innerHTML = formatBotText(fullResponse);
+            botMsg.wrap.dataset.raw = fullResponse;
+          }
+
+          conv.messages.push({ role: 'assistant', content: fullResponse, ts: Date.now() });
+          conv.updatedAt = Date.now();
+          upsertConversation(conv);
+
+        } catch (err) {
+          clearInterval(thinkingTimer);
+          botMsg.content.classList.remove('ai-msg-thinking');
+          botMsg.content.textContent = 'Error: ' + err.message;
+          botMsg.wrap.dataset.raw = 'Error: ' + err.message;
+          botMsg.wrap.classList.remove('is-thinking');
+          if (botMsg.copyBtn) botMsg.copyBtn.disabled = false;
+          conv.messages.push({ role: 'assistant', content: 'Error: ' + err.message, ts: Date.now() });
+          conv.updatedAt = Date.now();
+          upsertConversation(conv);
+        } finally {
+          clearInterval(thinkingTimer);
+          if (renderTimer) {
+            clearTimeout(renderTimer);
+            renderTimer = null;
+          }
+        }
+
+        isSending = false;
+        if (sendBtn) sendBtn.disabled = false;
+        input.focus();
+      }
+
+      if (form && input && messagesEl) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          sendMessage();
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+          }
+        });
+
+        input.addEventListener('input', function() {
+          this.style.height = 'auto';
+          this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+      }
+
+      if (messagesEl) {
+        messagesEl.addEventListener('click', async function(e) {
+          var btn = e.target.closest('.ai-copy-btn');
+          if (!btn) return;
+          var msg = btn.closest('.ai-msg');
+          if (!msg) return;
+          var raw = msg.dataset.raw || '';
+          var ok = false;
+          try { ok = await copyToClipboard(raw || msg.innerText); } catch (err) {}
+          if (ok) {
+            btn.setAttribute('data-copied', 'true');
+            clearTimeout(btn.__t);
+            btn.__t = setTimeout(function() { btn.removeAttribute('data-copied'); }, 900);
+          }
+        });
+      }
+
+      if (newChatBtn) {
+        newChatBtn.addEventListener('click', function() {
+          var convs = loadConversations();
+          var c = createConversation();
+          convs.unshift(c);
+          saveConversations(convs);
+          setCurrentConversationId(c.id);
+          renderConversationList(convs);
+          renderMessages(c);
+          if (input) input.focus();
+        });
+      }
+
+      var fileInput = document.getElementById('chat-file');
+      var attachBtn = document.getElementById('chat-attach');
+      if (attachBtn && fileInput) {
+        attachBtn.addEventListener('click', function() { fileInput.click(); });
+        fileInput.addEventListener('change', function() {
+          if (this.files && this.files.length) {
+            addMessage('Attachment: ' + [].slice.call(this.files).map(function(f) { return f.name; }).join(', '), true);
+            this.value = '';
+          }
+        });
+      }
+
+      // Account dropdown
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          accountMenu.classList.toggle('is-open');
+        });
+      }
+
+      document.addEventListener('click', function() {
+        if (accountMenu) accountMenu.classList.remove('is-open');
+        document.querySelectorAll('.ai-conv-menu.is-open').forEach(function(m) { m.classList.remove('is-open'); });
+      });
+
+      if (convListEl) {
+        convListEl.addEventListener('click', function(e) {
+          var dotsBtn = e.target.closest('.ai-conv-dots');
+          if (dotsBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            var menu = dotsBtn.nextElementSibling;
+            var wasOpen = menu && menu.classList.contains('is-open');
+            document.querySelectorAll('.ai-conv-menu.is-open').forEach(function(m) { m.classList.remove('is-open'); });
+            if (menu && !wasOpen) menu.classList.add('is-open');
+            return;
+          }
+
+          var menuItem = e.target.closest('.ai-conv-menu-item');
+          if (menuItem) {
+            e.preventDefault();
+            e.stopPropagation();
+            var action = menuItem.getAttribute('data-action');
+            var li = menuItem.closest('.ai-conv-item');
+            var id = li ? li.getAttribute('data-id') : '';
+            if (!id) return;
+
+            var convs = loadConversations();
+            var conv = convs.find(function(c) { return c.id === id; });
+            if (!conv) return;
+
+            if (action === 'rename') {
+              var name = prompt('Rename chat:', conv.title || 'New chat');
+              if (name && name.trim()) {
+                conv.title = name.trim();
+                conv.updatedAt = Date.now();
+                upsertConversation(conv);
+              }
+            } else if (action === 'delete') {
+              if (confirm('Delete this chat?')) {
+                convs = convs.filter(function(c) { return c.id !== id; });
+                if (!convs.length) {
+                  var fresh = createConversation();
+                  convs = [fresh];
+                }
+                saveConversations(convs);
+
+                if (getCurrentConversationId() === id) {
+                  setCurrentConversationId(convs[0].id);
+                  renderMessages(convs[0]);
+                }
+                renderConversationList(convs);
+              }
+            }
+
+            var menu = menuItem.closest('.ai-conv-menu');
+            if (menu) menu.classList.remove('is-open');
+            return;
+          }
+
+          var link = e.target.closest('.ai-conv-link');
+          if (link) {
+            e.preventDefault();
+            var li = link.closest('.ai-conv-item');
+            var id = li ? li.getAttribute('data-id') : '';
+            if (id) setActiveConversation(id);
+          }
+        });
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
