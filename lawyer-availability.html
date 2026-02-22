@@ -39,25 +39,34 @@
     <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
     <main class="ai-main">
       <div class="lav-page">
-        <div class="lav-connect-wrap">
-          <button type="button" class="lav-connect-btn btn btn-dark" id="lav-connect-btn">Connect to calendar</button>
-        </div>
+        <div class="lav-layout">
+          <div class="lav-main">
+            <div class="lav-calendar-card">
+              <div class="lav-connect-wrap">
+                <button type="button" class="lav-connect-btn btn btn-dark" id="lav-connect-btn">Connect to calendar</button>
+              </div>
+              <div class="lav-calendar-header">
+                <button type="button" class="lav-nav-btn" id="lav-prev" aria-label="Previous month">&larr;</button>
+                <h2 class="lav-month-title" id="lav-month-title">December 2025</h2>
+                <button type="button" class="lav-nav-btn" id="lav-next" aria-label="Next month">&rarr;</button>
+              </div>
+              <div class="lav-weekdays">
+                <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+              </div>
+              <div class="lav-days" id="lav-days"></div>
+              <div class="lav-actions">
+                <button type="button" class="lav-action-btn btn btn-danger" id="lav-block-btn">Block</button>
+                <button type="button" class="lav-action-btn btn" id="lav-clear-btn">Clear</button>
+                <button type="button" class="lav-action-btn btn btn-primary" id="lav-unblock-btn">Unblock</button>
+              </div>
+            </div>
+          </div>
 
-        <div class="lav-calendar-card">
-          <div class="lav-calendar-header">
-            <button type="button" class="lav-nav-btn" id="lav-prev" aria-label="Previous month">&larr;</button>
-            <h2 class="lav-month-title" id="lav-month-title">December 2025</h2>
-            <button type="button" class="lav-nav-btn" id="lav-next" aria-label="Next month">&rarr;</button>
-          </div>
-          <div class="lav-weekdays">
-            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-          </div>
-          <div class="lav-days" id="lav-days"></div>
-          <div class="lav-actions">
-            <button type="button" class="lav-action-btn btn btn-danger" id="lav-block-btn">Block</button>
-            <button type="button" class="lav-action-btn btn" id="lav-clear-btn">Clear</button>
-            <button type="button" class="lav-action-btn btn btn-primary" id="lav-unblock-btn">Unblock</button>
-          </div>
+          <aside class="lav-side-card">
+            <h2 class="lav-side-title">Time availability</h2>
+            <p class="lav-side-lead">Tap a slot to mark available or unavailable.</p>
+            <div class="lav-slots" id="lav-slots"></div>
+          </aside>
         </div>
       </div>
     </main>
@@ -155,6 +164,32 @@
       document.getElementById('lav-block-btn').addEventListener('click', applyBlock);
       document.getElementById('lav-clear-btn').addEventListener('click', applyClear);
       document.getElementById('lav-unblock-btn').addEventListener('click', applyUnblock);
+
+      var timeSlots = [];
+      for (var h = 8; h <= 18; h++) {
+        timeSlots.push({ key: h, label: (h <= 12 ? h : h - 12) + ':00 ' + (h < 12 ? 'AM' : 'PM') });
+      }
+      var slotAvailable = {};
+      timeSlots.forEach(function(s) { slotAvailable[s.key] = true; });
+
+      function renderSlots() {
+        var container = document.getElementById('lav-slots');
+        if (!container) return;
+        container.innerHTML = '';
+        timeSlots.forEach(function(s) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'lav-slot' + (slotAvailable[s.key] ? ' lav-slot-available' : ' lav-slot-unavailable');
+          btn.textContent = s.label;
+          btn.setAttribute('data-slot', s.key);
+          btn.addEventListener('click', function() {
+            slotAvailable[s.key] = !slotAvailable[s.key];
+            renderSlots();
+          });
+          container.appendChild(btn);
+        });
+      }
+      renderSlots();
 
       render();
     })();

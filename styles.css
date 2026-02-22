@@ -2453,18 +2453,115 @@ body.nav-drawer-open {
 
 /* Lawyer availability page */
 .lav-page {
-  padding: var(--space-lg) var(--space) var(--space-xl);
-  max-width: 420px;
+  padding: var(--space) var(--space) var(--space-lg);
+  max-width: 880px;
   margin: 0 auto;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lav-layout {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 1.25rem;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lav-main {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .lav-connect-wrap {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.lav-side-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lav-side-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.lav-side-lead {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.lav-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  overflow: auto;
+  min-height: 0;
+}
+
+.lav-slot {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.lav-slot:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-secondary, #f8fafc);
+}
+
+.lav-slot-available {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.lav-slot-available:hover {
+  background: #d1fae5;
+}
+
+.lav-slot-unavailable {
+  background: #f8fafc;
+  color: var(--text-muted);
+}
+
+.lav-slot-unavailable:hover {
+  background: #f1f5f9;
 }
 
 .lav-connect-btn {
   width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
 }
 
 .lav-calendar-card {
@@ -2473,6 +2570,11 @@ body.nav-drawer-open {
   border-radius: 14px;
   padding: 1.25rem;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .lav-calendar-header {
@@ -2599,6 +2701,28 @@ body.nav-drawer-open {
 .lav-action-btn {
   flex: 1;
   min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .lav-page {
+    overflow: auto;
+    height: auto;
+  }
+  .lav-layout {
+    grid-template-columns: 1fr;
+    overflow: visible;
+    min-height: auto;
+  }
+  .lav-main {
+    overflow: visible;
+  }
+  .lav-calendar-card {
+    flex: none;
+    min-height: auto;
+  }
+  .lav-side-card {
+    min-height: auto;
+  }
 }
 
 /* One rectangular KPI card divided into 4 sections with slightly different colours */
