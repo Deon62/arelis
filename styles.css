@@ -447,6 +447,7 @@ body.nav-drawer-open {
   font-size: 0.9375rem;
   text-decoration: none;
   border: none;
+  border-radius: 9999px;
   cursor: pointer;
   transition: opacity 0.15s ease;
 }
@@ -458,6 +459,26 @@ body.nav-drawer-open {
 .btn-primary {
   background-color: #065F46;
   color: #FAF9F6;
+}
+
+.btn-dark {
+  background-color: #0F172A;
+  color: #fff;
+}
+
+.btn-dark:hover {
+  background-color: #1e293b;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+  color: #fff;
 }
 
 /* Sections */
@@ -2428,6 +2449,156 @@ body.nav-drawer-open {
   .le-cards-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Lawyer availability page */
+.lav-page {
+  padding: var(--space-lg) var(--space) var(--space-xl);
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lav-connect-wrap {
+  margin-bottom: 1.25rem;
+}
+
+.lav-connect-btn {
+  width: 100%;
+}
+
+.lav-calendar-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+}
+
+.lav-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.lav-nav-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: #fff;
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.lav-nav-btn:hover {
+  background: var(--bg-secondary, #f8fafc);
+  border-color: var(--text-muted);
+}
+
+.lav-month-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.lav-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.lav-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.lav-day {
+  aspect-ratio: 1;
+  max-width: 44px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lav-day:hover {
+  background: var(--bg-secondary, #f1f5f9);
+}
+
+.lav-day-other {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.lav-day-today {
+  box-shadow: 0 0 0 2px var(--text);
+}
+
+.lav-day-today.lav-day-selected {
+  box-shadow: 0 0 0 2px #fff;
+}
+
+.lav-day-selected {
+  background: var(--text);
+  color: #fff;
+}
+
+.lav-day-selected:hover {
+  background: var(--text-muted);
+  color: #fff;
+}
+
+.lav-day-blocked {
+  background: #f1f5f9;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.lav-day-blocked.lav-day-selected {
+  background: #94a3b8;
+  color: #fff;
+  text-decoration: line-through;
+}
+
+.lav-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.lav-action-btn {
+  flex: 1;
+  min-width: 0;
 }
 
 /* One rectangular KPI card divided into 4 sections with slightly different colours */

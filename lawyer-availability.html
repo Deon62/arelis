@@ -38,9 +38,27 @@
     </aside>
     <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
     <main class="ai-main">
-      <div class="db lawyer-db">
-        <h1 class="lawyer-db-title">Availability</h1>
-        <p class="lawyer-db-lead">Set your available hours for client sessions. This page will be built next.</p>
+      <div class="lav-page">
+        <div class="lav-connect-wrap">
+          <button type="button" class="lav-connect-btn btn btn-dark" id="lav-connect-btn">Connect to calendar</button>
+        </div>
+
+        <div class="lav-calendar-card">
+          <div class="lav-calendar-header">
+            <button type="button" class="lav-nav-btn" id="lav-prev" aria-label="Previous month">&larr;</button>
+            <h2 class="lav-month-title" id="lav-month-title">December 2025</h2>
+            <button type="button" class="lav-nav-btn" id="lav-next" aria-label="Next month">&rarr;</button>
+          </div>
+          <div class="lav-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="lav-days" id="lav-days"></div>
+          <div class="lav-actions">
+            <button type="button" class="lav-action-btn btn btn-danger" id="lav-block-btn">Block</button>
+            <button type="button" class="lav-action-btn btn" id="lav-clear-btn">Clear</button>
+            <button type="button" class="lav-action-btn btn btn-primary" id="lav-unblock-btn">Unblock</button>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -56,6 +74,89 @@
       document.querySelectorAll('[data-action="logout"]').forEach(function(el) {
         el.addEventListener('click', function(e) { e.preventDefault(); localStorage.removeItem('fa_token'); localStorage.removeItem('fa_user'); window.location.href = 'index.html'; });
       });
+
+      document.getElementById('lav-connect-btn').addEventListener('click', function() {
+        alert('Calendar connection (Google, Outlook) will be added here.');
+      });
+
+      var blocked = {};
+      var selected = {};
+      var current = new Date();
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+      function key(d) {
+        return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      }
+
+      function render() {
+        var year = current.getFullYear();
+        var month = current.getMonth();
+        document.getElementById('lav-month-title').textContent = months[month] + ' ' + year;
+
+        var first = new Date(year, month, 1);
+        var last = new Date(year, month + 1, 0);
+        var start = new Date(first);
+        start.setDate(start.getDate() - start.getDay());
+        var end = new Date(last);
+        end.setDate(end.getDate() + (6 - end.getDay()));
+        var days = [];
+        var d = new Date(start);
+        while (d <= end) {
+          days.push(new Date(d));
+          d.setDate(d.getDate() + 1);
+        }
+
+        var grid = document.getElementById('lav-days');
+        grid.innerHTML = '';
+        grid.className = 'lav-days';
+        var today = new Date();
+        var todayKey = key(today);
+        days.forEach(function(date) {
+          var cell = document.createElement('button');
+          cell.type = 'button';
+          cell.className = 'lav-day';
+          if (date.getMonth() !== month) cell.classList.add('lav-day-other');
+          var k = key(date);
+          if (k === todayKey) cell.classList.add('lav-day-today');
+          if (blocked[k]) cell.classList.add('lav-day-blocked');
+          if (selected[k]) cell.classList.add('lav-day-selected');
+          cell.textContent = date.getDate();
+          cell.setAttribute('data-date', k);
+          cell.addEventListener('click', function() {
+            if (selected[k]) delete selected[k];
+            else selected[k] = true;
+            render();
+          });
+          grid.appendChild(cell);
+        });
+      }
+
+      function applyBlock() {
+        Object.keys(selected).forEach(function(k) { blocked[k] = true; delete selected[k]; });
+        render();
+      }
+      function applyClear() {
+        Object.keys(selected).forEach(function(k) { delete selected[k]; });
+        render();
+      }
+      function applyUnblock() {
+        Object.keys(selected).forEach(function(k) { delete blocked[k]; delete selected[k]; });
+        render();
+      }
+
+      document.getElementById('lav-prev').addEventListener('click', function() {
+        current.setMonth(current.getMonth() - 1);
+        render();
+      });
+      document.getElementById('lav-next').addEventListener('click', function() {
+        current.setMonth(current.getMonth() + 1);
+        render();
+      });
+      document.getElementById('lav-block-btn').addEventListener('click', applyBlock);
+      document.getElementById('lav-clear-btn').addEventListener('click', applyClear);
+      document.getElementById('lav-unblock-btn').addEventListener('click', applyUnblock);
+
+      render();
     })();
   </script>
 </body>
