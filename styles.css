@@ -2747,6 +2747,10 @@ body.nav-drawer-open {
   margin-bottom: 0;
 }
 
+.lms-card-tint {
+  background: #f8fafc;
+}
+
 .lms-card-title {
   margin: 0 0 0.75rem;
   padding: 0;
