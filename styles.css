@@ -1642,6 +1642,39 @@ body {
   overflow: hidden;
 }
 
+.ai-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 220;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.ai-sidebar-toggle svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.ai-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 210;
+}
+
 .ai-sidebar-inner {
   flex: 1;
   padding: 1rem 0.75rem;
@@ -2921,8 +2954,38 @@ body {
 }
 
 @media (max-width: 560px) {
+  .ai-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .ai-sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 215;
+    transform: translateX(-102%);
+    transition: transform 0.22s ease;
+    box-shadow: 10px 0 30px rgba(15, 23, 42, 0.18);
+  }
+
+  body.ai-sidebar-open .ai-sidebar {
+    transform: translateX(0);
+  }
+
+  .ai-sidebar-overlay {
+    display: block;
+  }
+
+  body.ai-sidebar-open .ai-sidebar-overlay {
+    opacity: 1;
+  }
+
+  .ai-main {
+    padding-top: 3.5rem;
   }
 }
 
@@ -3929,6 +3992,12 @@ body.auth-page:has(.lr-page) {
 @media (max-width: 560px) {
   .nav-cta-lawyer {
     display: none;
+  }
+  .site-header .nav > a {
+    display: none;
+  }
+  .site-header .nav {
+    gap: 0.5rem;
   }
   .lr-row {
     grid-template-columns: 1fr;

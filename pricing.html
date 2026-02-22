@@ -27,7 +27,13 @@
             <span class="nav-drawer-name" id="nav-drawer-name"></span>
             <button type="button" class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>
-          <nav class="nav-drawer-links">
+          <nav class="nav-drawer-links" id="nav-drawer-public">
+            <a href="index.html">Home</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="lawyer-register.html">Partner as a lawyer</a>
+            <a href="login.html" id="nav-drawer-login">Login</a>
+          </nav>
+          <nav class="nav-drawer-links" id="nav-drawer-app" style="display:none">
             <a href="ai.html">Arelis AI</a>
             <a href="dashboard.html">Dashboard</a>
             <a href="knowledge-base.html">Knowledge Base</a>
@@ -204,6 +210,10 @@
       var drawerOverlay = document.getElementById('nav-drawer-overlay');
       var drawerClose = document.getElementById('nav-drawer-close');
       var drawerName = document.getElementById('nav-drawer-name');
+      var drawerPublic = document.getElementById('nav-drawer-public');
+      var drawerApp = document.getElementById('nav-drawer-app');
+      var drawerLogin = document.getElementById('nav-drawer-login');
+      var drawerLogout = document.getElementById('nav-drawer-logout');
       var dropdown = document.getElementById('nav-account-dropdown');
 
       function doLogout(e) {
@@ -213,12 +223,22 @@
         window.location.href = 'login.html';
       }
 
+      var mobileMq = window.matchMedia('(max-width: 640px)');
+      function updateHamburgerVisibility() {
+        if (!hamburger) return;
+        hamburger.style.display = (isLoggedIn || mobileMq.matches) ? '' : 'none';
+      }
+      updateHamburgerVisibility();
+      if (mobileMq && mobileMq.addEventListener) mobileMq.addEventListener('change', updateHamburgerVisibility);
+
       if (isLoggedIn) {
         if (loginLink) loginLink.style.display = 'none';
         if (greeting) { greeting.textContent = 'Hi, ' + user.first_name; greeting.style.display = ''; }
         if (accountWrap) accountWrap.style.display = '';
-        if (hamburger) hamburger.style.display = '';
         if (drawerName) drawerName.textContent = user.first_name + ' ' + user.last_name;
+        if (drawerApp) drawerApp.style.display = '';
+        if (drawerLogin) drawerLogin.style.display = 'none';
+        if (drawerLogout) drawerLogout.style.display = '';
         document.querySelectorAll('a[href="login.html"]').forEach(function(a) {
           if (a.id !== 'nav-login-link') a.href = 'ai.html';
         });
@@ -226,7 +246,10 @@
         if (loginLink) loginLink.style.display = '';
         if (greeting) greeting.style.display = 'none';
         if (accountWrap) accountWrap.style.display = 'none';
-        if (hamburger) hamburger.style.display = 'none';
+        if (drawerName) drawerName.textContent = 'Menu';
+        if (drawerApp) drawerApp.style.display = 'none';
+        if (drawerLogin) drawerLogin.style.display = '';
+        if (drawerLogout) drawerLogout.style.display = 'none';
       }
 
       var avatarBtn = document.getElementById('nav-avatar');
