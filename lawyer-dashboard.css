@@ -1,0 +1,162 @@
+/**
+ * Lawyer Dashboard — standalone styles
+ * Load after styles.css; uses global vars (--text, --border, etc.)
+ */
+
+.lwd-page {
+  padding: var(--space-lg, 1.5rem) var(--space, 1.5rem) var(--space-xl, 3rem);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lwd-header {
+  margin-bottom: 1.5rem;
+}
+
+.lwd-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+.lwd-lead {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.5;
+}
+
+/* One card, 4 KPI sections, slightly different backgrounds */
+.lwd-kpi-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  margin-bottom: 1.5rem;
+}
+
+.lwd-kpi-cell {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lwd-kpi-cell:nth-child(1) { background: #fff; }
+.lwd-kpi-cell:nth-child(2) { background: #f8fafc; }
+.lwd-kpi-cell:nth-child(3) { background: #f1f5f9; }
+.lwd-kpi-cell:nth-child(4) { background: #eef2f7; }
+
+.lwd-kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lwd-kpi-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text, #0f172a);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Usage breakdown — horizontal bar chart (not line, not pie) */
+.lwd-section {
+  margin-bottom: 1.5rem;
+}
+
+.lwd-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text, #0f172a);
+}
+
+.lwd-usage-card {
+  background: #fff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.lwd-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lwd-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 2rem;
+}
+
+.lwd-bar-label {
+  flex: 0 0 120px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text, #0f172a);
+}
+
+.lwd-bar-track {
+  flex: 1;
+  min-width: 0;
+  height: 1.25rem;
+  background: var(--bg-secondary, #f1f5f9);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lwd-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.lwd-bar-fill--1 { background: #0f172a; }
+.lwd-bar-fill--2 { background: #475569; }
+.lwd-bar-fill--3 { background: #64748b; }
+.lwd-bar-fill--4 { background: #94a3b8; }
+
+.lwd-bar-value {
+  flex: 0 0 3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .lwd-kpi-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .lwd-kpi-card {
+    grid-template-columns: 1fr;
+  }
+  .lwd-bar-row {
+    flex-wrap: wrap;
+  }
+  .lwd-bar-label {
+    flex: 0 0 100%;
+  }
+  .lwd-bar-value {
+    flex: 0 0 auto;
+    order: 3;
+    width: 100%;
+    text-align: left;
+    padding-left: 0.25rem;
+  }
+}

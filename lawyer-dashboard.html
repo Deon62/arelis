@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="lawyer-dashboard.css">
 </head>
 <body class="ai-page">
 
@@ -40,14 +41,65 @@
     <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
 
     <main class="ai-main">
-      <div class="db lawyer-db">
-        <header class="lawyer-db-header">
-          <h1 class="lawyer-db-title">Dashboard</h1>
-          <p class="lawyer-db-lead">Welcome to your lawyer partner dashboard. Use the menu to manage sessions, earnings, and Arelis.</p>
+      <div class="lwd-page">
+        <header class="lwd-header">
+          <h1 class="lwd-title">Dashboard</h1>
+          <p class="lwd-lead">Overview of your sessions and earnings.</p>
         </header>
-        <section class="db-card lawyer-db-welcome">
-          <h2 class="db-card-title">Getting started</h2>
-          <p>Use <a href="ai.html">Arelis</a> for research and drafts, set your <a href="lawyer-availability.html">availability</a>, and train the AI in <a href="lawyer-ai-training.html">AI training</a>. Once approved, you’ll see booked sessions and earnings here.</p>
+
+        <div class="lwd-kpi-card">
+          <div class="lwd-kpi-cell">
+            <span class="lwd-kpi-label">Total bookings</span>
+            <span class="lwd-kpi-value">24</span>
+          </div>
+          <div class="lwd-kpi-cell">
+            <span class="lwd-kpi-label">Earnings</span>
+            <span class="lwd-kpi-value">KES 60,000</span>
+          </div>
+          <div class="lwd-kpi-cell">
+            <span class="lwd-kpi-label">Sessions completed</span>
+            <span class="lwd-kpi-value">18</span>
+          </div>
+          <div class="lwd-kpi-cell">
+            <span class="lwd-kpi-label">Pending</span>
+            <span class="lwd-kpi-value">3</span>
+          </div>
+        </div>
+
+        <section class="lwd-section">
+          <h2 class="lwd-section-title">Usage breakdown</h2>
+          <div class="lwd-usage-card">
+            <div class="lwd-bar-chart" id="lwd-bar-chart" aria-label="Sessions by topic">
+              <div class="lwd-bar-row">
+                <span class="lwd-bar-label">Contract review</span>
+                <div class="lwd-bar-track">
+                  <div class="lwd-bar-fill lwd-bar-fill--1" style="width: 50%;"></div>
+                </div>
+                <span class="lwd-bar-value">12</span>
+              </div>
+              <div class="lwd-bar-row">
+                <span class="lwd-bar-label">Employment</span>
+                <div class="lwd-bar-track">
+                  <div class="lwd-bar-fill lwd-bar-fill--2" style="width: 33.33%;"></div>
+                </div>
+                <span class="lwd-bar-value">8</span>
+              </div>
+              <div class="lwd-bar-row">
+                <span class="lwd-bar-label">Compliance</span>
+                <div class="lwd-bar-track">
+                  <div class="lwd-bar-fill lwd-bar-fill--3" style="width: 25%;"></div>
+                </div>
+                <span class="lwd-bar-value">6</span>
+              </div>
+              <div class="lwd-bar-row">
+                <span class="lwd-bar-label">Other</span>
+                <div class="lwd-bar-track">
+                  <div class="lwd-bar-fill lwd-bar-fill--4" style="width: 16.67%;"></div>
+                </div>
+                <span class="lwd-bar-value">4</span>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </main>
