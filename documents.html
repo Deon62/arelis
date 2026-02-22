@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="documents.css">
+</head>
+<body class="ai-page">
+  <div class="ai-app">
+    <button type="button" class="ai-sidebar-toggle" id="ai-sidebar-toggle" aria-label="Open menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="ai.html">AI</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="knowledge-base.html">Knowledge Base</a>
+          <a href="lawyer-sessions.html">Lawyer Sessions</a>
+          <a href="documents.html" class="ai-panel-nav-active">Documents</a>
+          <a href="billing.html">Billing</a>
+        </nav>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">My account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+    <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
+    <main class="ai-main">
+      <div class="doc-page">
+        <header class="doc-header">
+          <h1 class="doc-title">Documents</h1>
+          <p class="doc-lead">Receive and download documents from your lawyer; upload and send documents to your lawyer.</p>
+        </header>
+
+        <div class="doc-cards">
+          <div class="doc-card">
+            <h2 class="doc-card-title">Received from lawyer</h2>
+            <div class="doc-card-body">
+              <ul class="doc-list" id="doc-received-list">
+                <li class="doc-row">
+                  <span class="doc-name">Reviewed_contract_final.pdf</span>
+                  <span class="doc-date">19 Feb 2026</span>
+                  <div class="doc-actions">
+                    <a href="#" class="doc-btn-download" download>Download</a>
+                  </div>
+                </li>
+                <li class="doc-row">
+                  <span class="doc-name">Compliance_checklist.pdf</span>
+                  <span class="doc-date">14 Feb 2026</span>
+                  <div class="doc-actions">
+                    <a href="#" class="doc-btn-download" download>Download</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="doc-card doc-card--tint">
+            <h2 class="doc-card-title">Sent to lawyer</h2>
+            <div class="doc-card-body">
+              <form class="doc-upload" id="doc-upload-form" aria-label="Upload document to send">
+                <span class="doc-upload-label">Upload a file to send to your lawyer</span>
+                <input type="file" class="doc-upload-input" id="doc-upload-input" accept=".pdf,.doc,.docx" aria-label="Choose file">
+                <span class="doc-upload-hint">PDF, DOC or DOCX. Max 10 MB.</span>
+                <button type="submit" class="doc-btn-send btn btn-primary" id="doc-send-btn">Send to lawyer</button>
+              </form>
+              <ul class="doc-list" id="doc-sent-list">
+                <li class="doc-row">
+                  <span class="doc-name">Contract_draft_v2.pdf</span>
+                  <span class="doc-date">18 Feb 2026</span>
+                  <div class="doc-actions">
+                    <a href="#" class="doc-btn-download" download>Download</a>
+                  </div>
+                </li>
+                <li class="doc-row">
+                  <span class="doc-name">Company_registration_forms.pdf</span>
+                  <span class="doc-date">15 Feb 2026</span>
+                  <div class="doc-actions">
+                    <a href="#" class="doc-btn-download" download>Download</a>
+                  </div>
+                </li>
+                <li class="doc-row">
+                  <span class="doc-name">Employment_agreement.docx</span>
+                  <span class="doc-date">10 Feb 2026</span>
+                  <div class="doc-actions">
+                    <a href="#" class="doc-btn-download" download>Download</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="auth-guard.js"></script>
+  <script src="app-shell.js" defer></script>
+  <script>
+    (function() {
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) { e.stopPropagation(); accountMenu.classList.toggle('is-open'); });
+        document.addEventListener('click', function() { accountMenu.classList.remove('is-open'); });
+      }
+      document.querySelectorAll('[data-action="logout"]').forEach(function(el) {
+        el.addEventListener('click', function(e) { e.preventDefault(); localStorage.removeItem('fa_token'); localStorage.removeItem('fa_user'); window.location.href = 'index.html'; });
+      });
+
+      var form = document.getElementById('doc-upload-form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var input = document.getElementById('doc-upload-input');
+          if (!input || !input.files || !input.files.length) { alert('Please choose a file first.'); return; }
+          alert('Sending document will be connected to the API. File: ' + input.files[0].name);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -32,9 +32,10 @@
       </div>
 
       <div class="lr-form-side">
-        <div class="lr-form-card">
-          <h2 class="lr-form-title">Apply to join</h2>
-          <p class="lr-form-subtitle">We'll review your details and get back to you within 48 hours.</p>
+        <!-- Create account (default) -->
+        <div class="lr-form-card lr-panel lr-panel-signup" id="lr-panel-signup">
+          <h2 class="lr-form-title">Create account</h2>
+          <p class="lr-form-subtitle">Sign up to join as a lawyer partner.</p>
 
           <form class="lr-form" id="lr-form">
             <div class="lr-row">
@@ -54,70 +55,37 @@
             </div>
 
             <div class="lr-field">
-              <label class="lr-label" for="lr-phone">Phone number</label>
-              <div class="lr-phone-row">
-                <span class="lr-phone-prefix">+254</span>
-                <input class="lr-input lr-phone-input" type="tel" id="lr-phone" required placeholder="712 345 678" pattern="[0-9\s]{9,12}">
-              </div>
-            </div>
-
-            <div class="lr-field">
               <label class="lr-label" for="lr-lsk">LSK admission number</label>
               <input class="lr-input" type="text" id="lr-lsk" required placeholder="e.g. LSK/2019/12345">
             </div>
 
             <div class="lr-field">
-              <label class="lr-label" for="lr-years">Years of practice</label>
-              <select class="lr-input lr-select" id="lr-years" required>
-                <option value="" disabled selected>Select</option>
-                <option>0–2 years</option>
-                <option>3–5 years</option>
-                <option>6–10 years</option>
-                <option>10+ years</option>
-              </select>
+              <label class="lr-label" for="lr-password">Password</label>
+              <input class="lr-input" type="password" id="lr-password" required placeholder="••••••••" minlength="8" autocomplete="new-password">
             </div>
 
-            <div class="lr-field">
-              <label class="lr-label" for="lr-areas">Areas of expertise</label>
-              <select class="lr-input lr-select" id="lr-areas" required>
-                <option value="" disabled selected>Select primary area</option>
-                <option>Company &amp; commercial law</option>
-                <option>Employment law</option>
-                <option>Contracts &amp; agreements</option>
-                <option>Compliance &amp; regulation</option>
-                <option>Intellectual property</option>
-                <option>Tax law</option>
-                <option>Dispute resolution</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            <div class="lr-field">
-              <label class="lr-label" for="lr-firm">Current firm / practice (optional)</label>
-              <input class="lr-input" type="text" id="lr-firm" placeholder="e.g. Mwangi & Associates">
-            </div>
-
-            <div class="lr-field">
-              <label class="lr-label" for="lr-bio">Brief bio</label>
-              <textarea class="lr-input lr-textarea" id="lr-bio" rows="3" required placeholder="Tell us about your practice and why you'd like to partner with us..."></textarea>
-            </div>
-
-            <div class="lr-field">
-              <label class="lr-label">Upload practising certificate (PDF)</label>
-              <label class="lr-file-label" id="lr-file-label">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span id="lr-file-text">Choose file</span>
-                <input type="file" id="lr-cert" accept=".pdf" class="lr-file-hidden">
-              </label>
-            </div>
-
-            <label class="lr-checkbox">
-              <input type="checkbox" required>
-              <span>I confirm the above details are accurate and I hold a valid practising certificate from the Law Society of Kenya.</span>
-            </label>
-
-            <button type="submit" class="lr-submit">Submit application</button>
+            <button type="submit" class="lr-submit">Create account</button>
           </form>
+          <p class="lr-switch-text">Already have an account? <button type="button" class="lr-switch-link" id="lr-show-login">Log in</button></p>
+        </div>
+
+        <!-- Login (small card) -->
+        <div class="lr-form-card lr-form-card--compact lr-panel lr-panel-login" id="lr-panel-login" hidden>
+          <h2 class="lr-form-title">Log in</h2>
+          <p class="lr-form-subtitle">Enter your LSK number and password.</p>
+
+          <form class="lr-form" id="lr-login-form">
+            <div class="lr-field">
+              <label class="lr-label" for="lr-login-lsk">LSK admission number</label>
+              <input class="lr-input" type="text" id="lr-login-lsk" required placeholder="e.g. LSK/2019/12345" autocomplete="username">
+            </div>
+            <div class="lr-field">
+              <label class="lr-label" for="lr-login-password">Password</label>
+              <input class="lr-input" type="password" id="lr-login-password" required placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button type="submit" class="lr-submit">Log in</button>
+          </form>
+          <p class="lr-switch-text">Don't have an account? <button type="button" class="lr-switch-link" id="lr-show-signup">Create account</button></p>
         </div>
       </div>
     </div>
@@ -125,18 +93,34 @@
 
   <script>
     (function() {
-      var form = document.getElementById('lr-form');
-      var fileInput = document.getElementById('lr-cert');
-      var fileText = document.getElementById('lr-file-text');
+      var panelSignup = document.getElementById('lr-panel-signup');
+      var panelLogin = document.getElementById('lr-panel-login');
+      var showLogin = document.getElementById('lr-show-login');
+      var showSignup = document.getElementById('lr-show-signup');
 
-      if (fileInput && fileText) {
-        fileInput.addEventListener('change', function() {
-          fileText.textContent = this.files.length ? this.files[0].name : 'Choose file';
+      function goToLogin() {
+        if (panelSignup) panelSignup.hidden = true;
+        if (panelLogin) { panelLogin.hidden = false; panelLogin.removeAttribute('hidden'); }
+      }
+      function goToSignup() {
+        if (panelLogin) panelLogin.hidden = true;
+        if (panelSignup) panelSignup.hidden = false;
+      }
+
+      if (showLogin) showLogin.addEventListener('click', goToLogin);
+      if (showSignup) showSignup.addEventListener('click', goToSignup);
+
+      var form = document.getElementById('lr-form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          window.location.href = 'lawyer-dashboard.html';
         });
       }
 
-      if (form) {
-        form.addEventListener('submit', function(e) {
+      var loginForm = document.getElementById('lr-login-form');
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
           e.preventDefault();
           window.location.href = 'lawyer-dashboard.html';
         });

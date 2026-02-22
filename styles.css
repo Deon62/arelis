@@ -4540,7 +4540,7 @@ body.auth-page:has(.lr-page) {
 
 .lr-form-side {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 2.5rem 2rem;
   overflow-y: auto;
@@ -4554,6 +4554,47 @@ body.auth-page:has(.lr-page) {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 2rem;
+}
+
+/* Squeeze signup card so page doesn't scroll */
+.lr-panel-signup.lr-form-card {
+  padding: 1.25rem 1.5rem;
+}
+
+.lr-panel-signup .lr-form-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.15rem;
+}
+
+.lr-panel-signup .lr-form-subtitle {
+  margin-bottom: 0.65rem;
+}
+
+.lr-panel-signup .lr-form {
+  gap: 0.5rem;
+}
+
+.lr-panel-signup .lr-label {
+  margin-bottom: 0.2rem;
+}
+
+.lr-panel-signup .lr-input {
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.lr-panel-signup .lr-row {
+  gap: 0.5rem;
+}
+
+.lr-panel-signup .lr-submit {
+  margin-top: 0.2rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+}
+
+.lr-panel-signup .lr-switch-text {
+  margin-top: 0.5rem;
 }
 
 .lr-form-title {
@@ -4570,6 +4611,41 @@ body.auth-page:has(.lr-page) {
   font-size: 0.8125rem;
   text-align: center;
   color: var(--text-muted);
+}
+
+.lr-form-card--compact {
+  padding: 1.5rem;
+  max-width: 380px;
+}
+
+.lr-form-card--compact .lr-form-subtitle {
+  margin-bottom: 1rem;
+}
+
+.lr-form-card--compact .lr-form {
+  gap: 0.875rem;
+}
+
+.lr-switch-text {
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.lr-switch-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.lr-switch-link:hover {
+  opacity: 0.85;
 }
 
 .lr-form {
