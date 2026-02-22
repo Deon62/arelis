@@ -263,11 +263,26 @@
       var drawerLogout = document.getElementById('nav-drawer-logout');
       if (drawerLogout) drawerLogout.addEventListener('click', doLogout);
 
-      function openDrawer() { drawer.classList.add('open'); drawerOverlay.classList.add('open'); }
-      function closeDrawer() { drawer.classList.remove('open'); drawerOverlay.classList.remove('open'); }
+      function openDrawer() {
+        if (!drawer || !drawerOverlay) return;
+        var sw = window.innerWidth - document.documentElement.clientWidth;
+        if (sw > 0) document.body.style.paddingRight = sw + 'px';
+        drawer.classList.add('open');
+        drawerOverlay.classList.add('open');
+        document.body.classList.add('nav-drawer-open');
+      }
+      function closeDrawer() {
+        if (!drawer || !drawerOverlay) return;
+        drawer.classList.remove('open');
+        drawerOverlay.classList.remove('open');
+        document.body.classList.remove('nav-drawer-open');
+        document.body.style.paddingRight = '';
+      }
       if (hamburger) hamburger.addEventListener('click', openDrawer);
       if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
       if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+      if (drawer) drawer.addEventListener('click', function(e) { if (e.target.closest('a')) closeDrawer(); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
     })();
   </script>
   <script>
