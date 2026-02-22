@@ -42,41 +42,40 @@
       <div class="doc-page">
         <header class="doc-header">
           <h1 class="doc-title">Documents</h1>
-          <p class="doc-lead">Receive and download documents from your lawyer; upload and send documents to your lawyer.</p>
+          <p class="doc-lead">Download documents you received or upload and send to your lawyer.</p>
         </header>
 
-        <div class="doc-cards">
-          <div class="doc-card">
-            <h2 class="doc-card-title">Received from lawyer</h2>
-            <div class="doc-card-body">
+        <div class="doc-card doc-card--single">
+          <h2 class="doc-card-title">Documents</h2>
+          <div class="doc-card-body doc-card-body--split">
+            <input type="file" id="doc-upload-input" accept=".pdf,.doc,.docx" class="doc-file-hidden" aria-label="Choose file to send">
+            <div class="doc-list-wrap">
               <ul class="doc-list" id="doc-received-list">
-                <li class="doc-row">
+                <li class="doc-row doc-row-simple">
                   <span class="doc-name">Reviewed_contract_final.pdf</span>
-                  <span class="doc-date">19 Feb 2026</span>
-                  <div class="doc-actions">
+                  <span class="doc-sender">Jane Mwangi</span>
+                  <div class="doc-row-actions">
                     <a href="#" class="doc-btn-download" download>Download</a>
+                    <button type="button" class="doc-btn-upload doc-btn-upload-inline" data-send-to="Jane Mwangi">Upload</button>
                   </div>
                 </li>
-                <li class="doc-row">
+                <li class="doc-row doc-row-simple">
                   <span class="doc-name">Compliance_checklist.pdf</span>
-                  <span class="doc-date">14 Feb 2026</span>
-                  <div class="doc-actions">
+                  <span class="doc-sender">Jane Mwangi</span>
+                  <div class="doc-row-actions">
                     <a href="#" class="doc-btn-download" download>Download</a>
+                    <button type="button" class="doc-btn-upload doc-btn-upload-inline" data-send-to="Jane Mwangi">Upload</button>
                   </div>
                 </li>
               </ul>
             </div>
           </div>
+        </div>
 
-          <div class="doc-card doc-card--tint">
-            <h2 class="doc-card-title">Sent to lawyer</h2>
+        <section class="doc-sent-section">
+          <h2 class="doc-section-title">All sent documents</h2>
+          <div class="doc-card doc-card--sent">
             <div class="doc-card-body">
-              <form class="doc-upload" id="doc-upload-form" aria-label="Upload document to send">
-                <span class="doc-upload-label">Upload a file to send to your lawyer</span>
-                <input type="file" class="doc-upload-input" id="doc-upload-input" accept=".pdf,.doc,.docx" aria-label="Choose file">
-                <span class="doc-upload-hint">PDF, DOC or DOCX. Max 10 MB.</span>
-                <button type="submit" class="doc-btn-send btn btn-primary" id="doc-send-btn">Send to lawyer</button>
-              </form>
               <ul class="doc-list" id="doc-sent-list">
                 <li class="doc-row">
                   <span class="doc-name">Contract_draft_v2.pdf</span>
@@ -102,7 +101,7 @@
               </ul>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   </div>
@@ -120,13 +119,21 @@
         el.addEventListener('click', function(e) { e.preventDefault(); localStorage.removeItem('fa_token'); localStorage.removeItem('fa_user'); window.location.href = 'index.html'; });
       });
 
-      var form = document.getElementById('doc-upload-form');
-      if (form) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          var input = document.getElementById('doc-upload-input');
-          if (!input || !input.files || !input.files.length) { alert('Please choose a file first.'); return; }
-          alert('Sending document will be connected to the API. File: ' + input.files[0].name);
+      var fileInput = document.getElementById('doc-upload-input');
+      var sendToRecipient = null;
+      document.querySelectorAll('.doc-btn-upload-inline').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          sendToRecipient = this.getAttribute('data-send-to') || '';
+          if (fileInput) fileInput.click();
+        });
+      });
+      if (fileInput) {
+        fileInput.addEventListener('change', function() {
+          if (this.files && this.files.length && sendToRecipient) {
+            alert('Sending "' + this.files[0].name + '" to ' + sendToRecipient + '. Will be connected to the API.');
+          }
+          this.value = '';
+          sendToRecipient = null;
         });
       }
     })();
