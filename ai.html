@@ -484,11 +484,15 @@
         } catch (err) {
           clearInterval(thinkingTimer);
           botMsg.content.classList.remove('ai-msg-thinking');
-          botMsg.content.textContent = 'Error: ' + err.message;
-          botMsg.wrap.dataset.raw = 'Error: ' + err.message;
+          var msg = (err && err.message) ? String(err.message) : 'Request failed';
+          var friendly = (msg === 'Failed to fetch' || msg.toLowerCase().indexOf('network') >= 0)
+            ? 'Network error: unable to reach the server. Please confirm the backend is running on http://localhost:8001 and try again.'
+            : ('Error: ' + msg);
+          botMsg.content.textContent = friendly;
+          botMsg.wrap.dataset.raw = friendly;
           botMsg.wrap.classList.remove('is-thinking');
           if (botMsg.copyBtn) botMsg.copyBtn.disabled = false;
-          conv.messages.push({ role: 'assistant', content: 'Error: ' + err.message, ts: Date.now() });
+          conv.messages.push({ role: 'assistant', content: friendly, ts: Date.now() });
           conv.updatedAt = Date.now();
           upsertConversation(conv);
         } finally {

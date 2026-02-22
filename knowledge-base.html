@@ -43,16 +43,17 @@
         <div class="kb-header">
           <label class="kb-upload-btn" id="kb-upload-label">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Upload files
-            <input type="file" id="kb-file-input" class="kb-file-input" accept=".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx" multiple>
+            <span class="kb-upload-text" id="kb-upload-text">Upload files</span>
+            <input type="file" id="kb-file-input" class="kb-file-input" accept=".pdf" multiple>
           </label>
         </div>
+        <p class="kb-status" id="kb-status" aria-live="polite"></p>
 
         <div class="kb-drop-zone" id="kb-drop-zone">
           <div class="kb-drop-inner">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" class="kb-drop-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             <p class="kb-drop-text">Drag & drop files here, or click upload above</p>
-            <p class="kb-drop-hint">PDF, DOC, DOCX, TXT, CSV, XLS</p>
+            <p class="kb-drop-hint">PDF</p>
           </div>
         </div>
 
@@ -65,6 +66,7 @@
   <script src="app-shell.js"></script>
   <script>
     (function() {
+      var API = 'http://localhost:8001';
       var accountBtn = document.getElementById('account-btn');
       var accountMenu = document.getElementById('account-menu');
       if (accountBtn && accountMenu) {
@@ -80,50 +82,146 @@
       var fileInput = document.getElementById('kb-file-input');
       var filesList = document.getElementById('kb-files-list');
       var dropZone = document.getElementById('kb-drop-zone');
+      var uploadLabel = document.getElementById('kb-upload-label');
+      var uploadText = document.getElementById('kb-upload-text');
+      var statusEl = document.getElementById('kb-status');
+      var isUploading = false;
+      var originalUploadText = uploadText ? uploadText.textContent : 'Upload files';
+      var currentDocs = [];
 
-      function addFileRow(file) {
-        var ext = file.name.split('.').pop().toUpperCase();
-        var size = file.size < 1024 * 1024
-          ? (file.size / 1024).toFixed(0) + ' KB'
-          : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-        var today = new Date();
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var dateStr = months[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
-
-        var item = document.createElement('div');
-        item.className = 'kb-file-item';
-        item.innerHTML =
-          '<span class="kb-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>' +
-          '<div class="kb-file-info">' +
-            '<span class="kb-file-name">' + file.name + '</span>' +
-            '<span class="kb-file-meta">' + ext + ' \u00b7 ' + size + ' \u00b7 Uploaded ' + dateStr + '</span>' +
-          '</div>' +
-          '<button type="button" class="kb-file-remove" aria-label="Remove file"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
-
-        item.querySelector('.kb-file-remove').addEventListener('click', function() {
-          if (confirm('Remove ' + file.name + '?')) item.remove();
-        });
-        filesList.appendChild(item);
+      function safeParse(str, fallback) {
+        try { return JSON.parse(str); } catch(e) { return fallback; }
       }
 
-      function handleFiles(files) {
-        for (var i = 0; i < files.length; i++) addFileRow(files[i]);
+      function getUserId() {
+        var u = safeParse(localStorage.getItem('fa_user') || '', null);
+        return (u && (u.id || u.email)) ? String(u.id || u.email) : 'anon';
+      }
+
+      var DOCS_CACHE_KEY = 'fa_kb_docs_' + getUserId();
+
+      function setStatus(msg) {
+        if (!statusEl) return;
+        statusEl.textContent = msg || '';
+        statusEl.style.display = msg ? '' : 'none';
+      }
+
+      function setUploading(on) {
+        isUploading = !!on;
+        if (uploadLabel) uploadLabel.classList.toggle('is-uploading', on);
+        if (uploadText) uploadText.textContent = on ? 'Uploading…' : originalUploadText;
+        setStatus(on ? 'Uploading & indexing your PDF… this can take a moment.' : '');
+      }
+
+      function renderDocs(docs) {
+        if (!filesList) return;
+        currentDocs = Array.isArray(docs) ? docs : [];
+        try { localStorage.setItem(DOCS_CACHE_KEY, JSON.stringify(currentDocs)); } catch(e) {}
+
+        filesList.innerHTML = '';
+        (docs || []).forEach(function(doc) {
+          var item = document.createElement('div');
+          item.className = 'kb-file-item';
+          item.setAttribute('data-doc-id', doc.id);
+          item.innerHTML =
+            '<span class="kb-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>' +
+            '<div class="kb-file-info">' +
+              '<span class="kb-file-name">' + doc.filename + '</span>' +
+              '<span class="kb-file-meta">PDF \u00b7 Uploaded</span>' +
+            '</div>' +
+            '<button type="button" class="kb-file-remove" aria-label="Remove file" title="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+          filesList.appendChild(item);
+        });
+      }
+
+      function renderPending(files) {
+        if (!filesList) return;
+        for (var i = 0; i < files.length; i++) {
+          var f = files[i];
+          var item = document.createElement('div');
+          item.className = 'kb-file-item is-pending';
+          item.innerHTML =
+            '<span class="kb-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>' +
+            '<div class="kb-file-info">' +
+              '<span class="kb-file-name">' + f.name + '</span>' +
+              '<span class="kb-file-meta">Uploading…</span>' +
+            '</div>';
+          filesList.prepend(item);
+        }
+      }
+
+      async function fetchDocs() {
+        setStatus(isUploading ? 'Uploading & indexing your PDF… this can take a moment.' : 'Syncing your knowledge base…');
+        var token = localStorage.getItem('fa_token');
+        var res = await fetch(API + '/api/kb/documents', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) { setStatus(''); return; }
+        var docs = await res.json();
+        renderDocs(docs);
+        setStatus('');
+        return currentDocs;
+      }
+
+      async function uploadFiles(files) {
+        if (isUploading) return;
+        if (!files || !files.length) return;
+        setUploading(true);
+        renderPending(files);
+
+        try {
+          var beforeCount = (currentDocs || []).length;
+          var token = localStorage.getItem('fa_token');
+          var fd = new FormData();
+          for (var i = 0; i < files.length; i++) {
+            fd.append('files', files[i], files[i].name);
+          }
+          var res = await fetch(API + '/api/kb/upload', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: fd
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error((data && data.detail) || 'Upload failed');
+          // Poll until the doc shows up (indexing can take time)
+          var start = Date.now();
+          while (Date.now() - start < 15000) {
+            var docs = await fetchDocs();
+            if (docs && docs.length >= beforeCount + 1) break;
+            await new Promise(function(r) { setTimeout(r, 900); });
+          }
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          setUploading(false);
+        }
       }
 
       if (fileInput) {
         fileInput.addEventListener('change', function() {
-          if (this.files.length) handleFiles(this.files);
+          if (this.files.length) uploadFiles(this.files);
           this.value = '';
         });
       }
 
-      document.querySelectorAll('.kb-file-remove').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var item = this.closest('.kb-file-item');
+      if (filesList) {
+        filesList.addEventListener('click', async function(e) {
+          var btn = e.target.closest('.kb-file-remove');
+          if (!btn) return;
+          var item = btn.closest('.kb-file-item');
           var name = item.querySelector('.kb-file-name').textContent;
-          if (confirm('Remove ' + name + '?')) item.remove();
+          var docId = item.getAttribute('data-doc-id');
+          if (!docId) return;
+          if (!confirm('Remove ' + name + '?')) return;
+
+          var token = localStorage.getItem('fa_token');
+          var res = await fetch(API + '/api/kb/documents/' + encodeURIComponent(docId), {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok) item.remove();
         });
-      });
+      }
 
       if (dropZone) {
         ['dragenter', 'dragover'].forEach(function(evt) {
@@ -139,9 +237,14 @@
           });
         });
         dropZone.addEventListener('drop', function(e) {
-          if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+          if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
         });
       }
+
+      // Render cached docs immediately to avoid flicker
+      var cached = safeParse(localStorage.getItem(DOCS_CACHE_KEY) || '[]', []);
+      if (Array.isArray(cached) && cached.length) renderDocs(cached);
+      fetchDocs();
     })();
   </script>
 </body>
