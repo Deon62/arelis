@@ -3310,7 +3310,28 @@ body.nav-drawer-open {
 
 .ls-session-card:hover { box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
 
-.ls-session-past { opacity: 0.55; }
+.ls-session-past {
+  opacity: 1;
+  background: #fff;
+}
+
+.ls-session-past .ls-session-topic {
+  color: var(--text-muted);
+}
+
+.ls-session-past .ls-session-meta {
+  color: var(--text-muted);
+}
+
+.ls-empty-card {
+  background: #fff;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
 
 .ls-session-date {
   display: flex;

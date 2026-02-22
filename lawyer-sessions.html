@@ -90,47 +90,14 @@
 
             <section class="ls-upcoming">
               <h2 class="ls-section-title">Upcoming</h2>
-              <div class="ls-session-list">
-                <div class="ls-session-card">
-                  <div class="ls-session-date">
-                    <span class="ls-session-day">15</span>
-                    <span class="ls-session-month">Nov</span>
-                  </div>
-                  <div class="ls-session-info">
-                    <span class="ls-session-topic">Contract review</span>
-                    <span class="ls-session-meta">10:00 AM · 30 min · Video call</span>
-                  </div>
-                  <span class="ls-session-status ls-status-confirmed">Confirmed</span>
-                </div>
-                <div class="ls-session-card">
-                  <div class="ls-session-date">
-                    <span class="ls-session-day">22</span>
-                    <span class="ls-session-month">Nov</span>
-                  </div>
-                  <div class="ls-session-info">
-                    <span class="ls-session-topic">Employment law</span>
-                    <span class="ls-session-meta">02:00 PM · 30 min · Video call</span>
-                  </div>
-                  <span class="ls-session-status ls-status-pending">Pending</span>
-                </div>
-              </div>
+              <div class="ls-session-list" id="ls-upcoming-list"></div>
+              <div class="ls-empty-card" id="ls-upcoming-empty" style="display:none">No upcoming sessions yet.</div>
             </section>
 
             <section class="ls-past">
               <h2 class="ls-section-title">Past</h2>
-              <div class="ls-session-list">
-                <div class="ls-session-card ls-session-past">
-                  <div class="ls-session-date">
-                    <span class="ls-session-day">28</span>
-                    <span class="ls-session-month">Oct</span>
-                  </div>
-                  <div class="ls-session-info">
-                    <span class="ls-session-topic">Compliance &amp; regulation</span>
-                    <span class="ls-session-meta">11:00 AM · 30 min · Completed</span>
-                  </div>
-                  <span class="ls-session-status ls-status-done">Done</span>
-                </div>
-              </div>
+              <div class="ls-session-list" id="ls-past-list"></div>
+              <div class="ls-empty-card" id="ls-past-empty" style="display:none">No past sessions yet.</div>
             </section>
           </div>
 
@@ -154,12 +121,12 @@
 
             <div class="ls-stats-card">
               <div class="ls-stat">
-                <span class="ls-stat-value">4</span>
+                <span class="ls-stat-value" id="ls-stat-month">0</span>
                 <span class="ls-stat-label">Sessions this month</span>
               </div>
               <div class="ls-stat">
-                <span class="ls-stat-value">2</span>
-                <span class="ls-stat-label">Remaining on plan</span>
+                <span class="ls-stat-value" id="ls-stat-pending">0</span>
+                <span class="ls-stat-label">Pending approvals</span>
               </div>
             </div>
           </div>
@@ -172,6 +139,7 @@
   <script src="app-shell.js"></script>
   <script>
     (function() {
+      var API = 'http://localhost:8001';
       var accountBtn = document.getElementById('account-btn');
       var accountMenu = document.getElementById('account-menu');
       if (accountBtn && accountMenu) {
@@ -185,13 +153,150 @@
       }
 
       var form = document.getElementById('ls-form');
+      var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+      var upcomingList = document.getElementById('ls-upcoming-list');
+      var pastList = document.getElementById('ls-past-list');
+      var upcomingEmpty = document.getElementById('ls-upcoming-empty');
+      var pastEmpty = document.getElementById('ls-past-empty');
+      var statMonth = document.getElementById('ls-stat-month');
+      var statPending = document.getElementById('ls-stat-pending');
+
+      function fmtDateParts(d) {
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return { day: String(d.getDate()), month: months[d.getMonth()] };
+      }
+
+      function fmtTime(d) {
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        if (h === 0) h = 12;
+        var mm = m < 10 ? ('0' + m) : String(m);
+        return h + ':' + mm + ' ' + ampm;
+      }
+
+      function statusClass(status) {
+        if (status === 'confirmed') return 'ls-status-confirmed';
+        if (status === 'completed') return 'ls-status-done';
+        if (status === 'cancelled') return 'ls-status-done';
+        return 'ls-status-pending';
+      }
+
+      function statusLabel(status) {
+        if (status === 'confirmed') return 'Confirmed';
+        if (status === 'completed') return 'Done';
+        if (status === 'cancelled') return 'Cancelled';
+        return 'Pending';
+      }
+
+      function renderList(listEl, emptyEl, sessions, isPast) {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        if (!sessions.length) {
+          if (emptyEl) emptyEl.style.display = '';
+          return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+
+        sessions.forEach(function(s) {
+          var dt = new Date(s.scheduled_at);
+          var parts = fmtDateParts(dt);
+          var card = document.createElement('div');
+          card.className = 'ls-session-card' + (isPast ? ' ls-session-past' : '');
+          card.innerHTML =
+            '<div class="ls-session-date">' +
+              '<span class="ls-session-day">' + parts.day + '</span>' +
+              '<span class="ls-session-month">' + parts.month + '</span>' +
+            '</div>' +
+            '<div class="ls-session-info">' +
+              '<span class="ls-session-topic">' + s.topic + '</span>' +
+              '<span class="ls-session-meta">' + fmtTime(dt) + ' · 30 min · Video call</span>' +
+            '</div>' +
+            '<span class="ls-session-status ' + statusClass(s.status) + '">' + statusLabel(s.status) + '</span>';
+          listEl.appendChild(card);
+        });
+      }
+
+      async function fetchSessions() {
+        var token = localStorage.getItem('fa_token');
+        var res = await fetch(API + '/api/sessions', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) return [];
+        return await res.json();
+      }
+
+      function updateStats(all) {
+        var now = new Date();
+        var monthCount = 0;
+        var pendingCount = 0;
+        all.forEach(function(s) {
+          var dt = new Date(s.scheduled_at);
+          if (dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth()) monthCount++;
+          if (s.status === 'pending') pendingCount++;
+        });
+        if (statMonth) statMonth.textContent = String(monthCount);
+        if (statPending) statPending.textContent = String(pendingCount);
+      }
+
+      async function refresh() {
+        var all = await fetchSessions();
+        updateStats(all);
+
+        var now = new Date();
+        var upcoming = [];
+        var past = [];
+        all.forEach(function(s) {
+          var dt = new Date(s.scheduled_at);
+          var isPast = dt < now || s.status === 'completed' || s.status === 'cancelled';
+          (isPast ? past : upcoming).push(s);
+        });
+
+        // Sort ascending for upcoming, descending for past
+        upcoming.sort(function(a, b) { return new Date(a.scheduled_at) - new Date(b.scheduled_at); });
+        past.sort(function(a, b) { return new Date(b.scheduled_at) - new Date(a.scheduled_at); });
+
+        renderList(upcomingList, upcomingEmpty, upcoming, false);
+        renderList(pastList, pastEmpty, past, true);
+      }
+
       if (form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
-          alert('Session booking submitted. You will receive an M-Pesa payment prompt and confirmation.');
-          form.reset();
+          if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Booking…'; }
+
+          var token = localStorage.getItem('fa_token');
+          fetch(API + '/api/sessions/book', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+              topic: document.getElementById('ls-topic').value,
+              date: document.getElementById('ls-date').value,
+              time: document.getElementById('ls-time').value,
+              notes: document.getElementById('ls-notes').value
+            })
+          }).then(function(res) {
+            return res.json().then(function(data) {
+              if (!res.ok) throw new Error((data && data.detail) || 'Booking failed');
+              return data;
+            });
+          }).then(function() {
+            form.reset();
+            alert('Session booked and is pending approval.');
+            refresh();
+          }).catch(function(err) {
+            alert(err.message);
+          }).finally(function() {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Book session'; }
+          });
         });
       }
+
+      refresh();
     })();
   </script>
 </body>
