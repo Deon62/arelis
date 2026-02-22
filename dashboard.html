@@ -43,20 +43,20 @@
     <main class="ai-main">
       <div class="db">
 
-        <div class="db-kpis">
-          <div class="db-kpi">
+        <div class="db-kpis-card">
+          <div class="db-kpi db-kpi-1">
             <span class="db-kpi-value">127</span>
             <span class="db-kpi-label">AI queries</span>
           </div>
-          <div class="db-kpi">
+          <div class="db-kpi db-kpi-2">
             <span class="db-kpi-value">4</span>
             <span class="db-kpi-label">Lawyer sessions</span>
           </div>
-          <div class="db-kpi">
+          <div class="db-kpi db-kpi-3">
             <span class="db-kpi-value">12</span>
             <span class="db-kpi-label">Documents</span>
           </div>
-          <div class="db-kpi">
+          <div class="db-kpi db-kpi-4">
             <span class="db-kpi-value">KES 7,500</span>
             <span class="db-kpi-label">Total spend</span>
           </div>
@@ -70,8 +70,8 @@
                 <img src="assets/mpesa.png" alt="M-Pesa" class="db-mpesa-logo">
               </span>
               <div>
-                <span class="db-payment-card">M-Pesa · 0712 •••• 89</span>
-                <span class="db-payment-exp">Active</span>
+                <span class="db-payment-card" id="db-payment-msisdn">M-Pesa · …</span>
+                <span class="db-payment-exp" id="db-payment-status">—</span>
               </div>
             </div>
             <div class="db-payment-detail">
@@ -146,6 +146,7 @@
   <script src="app-shell.js" defer></script>
   <script>
     (function() {
+      var API = 'http://localhost:8001';
       var accountBtn = document.getElementById('account-btn');
       var accountMenu = document.getElementById('account-menu');
       if (accountBtn && accountMenu) {
@@ -157,6 +158,38 @@
           accountMenu.classList.remove('is-open');
         });
       }
+
+      function maskMsisdn(msisdnDigits) {
+        var s = String(msisdnDigits || '');
+        if (s.length < 9) return null;
+        var local = s.startsWith('254') ? ('0' + s.slice(3)) : s;
+        return 'M-Pesa · ' + local.slice(0, 4) + ' •••• ' + local.slice(-2);
+      }
+
+      (function loadPaymentMpesa() {
+        var cardEl = document.getElementById('db-payment-msisdn');
+        var statusEl = document.getElementById('db-payment-status');
+        if (!cardEl) return;
+        var token = localStorage.getItem('fa_token');
+        fetch(API + '/api/billing/mpesa', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).then(function(res) {
+          if (!res.ok) return res.json().then(function() { throw new Error(); }).catch(function() { throw new Error(); });
+          return res.json();
+        }).then(function(data) {
+          if (data && data.msisdn) {
+            var masked = maskMsisdn(data.msisdn);
+            cardEl.textContent = masked || 'M-Pesa · Not set';
+            if (statusEl) statusEl.textContent = masked ? 'Active' : 'Not set';
+          } else {
+            cardEl.textContent = 'M-Pesa · Not set';
+            if (statusEl) statusEl.textContent = 'Add in Billing';
+          }
+        }).catch(function() {
+          cardEl.textContent = 'M-Pesa · …';
+          if (statusEl) statusEl.textContent = '—';
+        });
+      })();
     })();
   </script>
 </body>
