@@ -1,3 +1,22 @@
+// Prefetch linked pages on hover for faster navigation
+(function () {
+  var prefetched = {};
+  document.addEventListener('mouseover', function (e) {
+    var a = e.target && e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || a.href.startsWith('javascript:') || a.href.startsWith('#')) return;
+    var url = a.href;
+    try {
+      var sameOrigin = new URL(url).origin === location.origin;
+      if (!sameOrigin || prefetched[url]) return;
+      prefetched[url] = true;
+      var link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      document.head.appendChild(link);
+    } catch (err) {}
+  }, { passive: true });
+})();
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
   anchor.addEventListener('click', function (e) {

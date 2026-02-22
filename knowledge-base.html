@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="prefetch" href="ai.html">
+  <link rel="prefetch" href="dashboard.html">
 </head>
 <body class="ai-page">
 
@@ -48,6 +50,10 @@
           </label>
         </div>
         <p class="kb-status" id="kb-status" aria-live="polite"></p>
+        <div class="kb-upload-progress" id="kb-upload-progress" style="display:none" aria-hidden="true">
+          <div class="kb-upload-progress-bar"><span></span></div>
+          <div class="kb-upload-progress-text" id="kb-upload-progress-text">Uploading…</div>
+        </div>
 
         <div class="kb-drop-zone" id="kb-drop-zone">
           <div class="kb-drop-inner">
@@ -64,7 +70,7 @@
   </div>
 
   <script src="auth-guard.js"></script>
-  <script src="app-shell.js"></script>
+  <script src="app-shell.js" defer></script>
   <script>
     (function() {
       var API = 'http://localhost:8001';
@@ -87,6 +93,8 @@
       var uploadText = document.getElementById('kb-upload-text');
       var statusEl = document.getElementById('kb-status');
       var emptyEl = document.getElementById('kb-empty');
+      var progressWrap = document.getElementById('kb-upload-progress');
+      var progressText = document.getElementById('kb-upload-progress-text');
       var isUploading = false;
       var originalUploadText = uploadText ? uploadText.textContent : 'Upload files';
       var currentDocs = [];
@@ -113,6 +121,8 @@
         if (uploadLabel) uploadLabel.classList.toggle('is-uploading', on);
         if (uploadText) uploadText.textContent = on ? 'Uploading…' : originalUploadText;
         setStatus(on ? 'Uploading & indexing your PDF… this can take a moment.' : '');
+        if (progressWrap) progressWrap.style.display = on ? '' : 'none';
+        if (progressText) progressText.textContent = on ? 'Uploading & indexing…' : '';
       }
 
       function renderDocs(docs, opts) {
@@ -148,22 +158,6 @@
         if (emptyEl) emptyEl.style.display = currentDocs.length ? 'none' : '';
       }
 
-      function renderPending(files) {
-        if (!filesList) return;
-        for (var i = 0; i < files.length; i++) {
-          var f = files[i];
-          var item = document.createElement('div');
-          item.className = 'kb-file-item is-pending';
-          item.innerHTML =
-            '<span class="kb-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>' +
-            '<div class="kb-file-info">' +
-              '<span class="kb-file-name">' + f.name + '</span>' +
-              '<span class="kb-file-meta">Uploading…</span>' +
-            '</div>';
-          filesList.prepend(item);
-        }
-      }
-
       async function fetchDocs() {
         setStatus(isUploading ? 'Uploading & indexing your PDF… this can take a moment.' : 'Syncing your knowledge base…');
         var token = localStorage.getItem('fa_token');
@@ -181,7 +175,6 @@
         if (isUploading) return;
         if (!files || !files.length) return;
         setUploading(true);
-        renderPending(files);
 
         try {
           var beforeCount = (currentDocs || []).length;
