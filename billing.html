@@ -51,11 +51,11 @@
                 <div class="bill-method-row">
                   <img src="assets/mpesa.png" alt="M-Pesa" class="bill-method-logo">
                   <div>
-                    <span class="bill-method-number" id="bill-display-number">0712 •••• 89</span>
-                    <span class="bill-method-label">Active M-Pesa number</span>
+                    <span class="bill-method-number" id="bill-display-number">Not set</span>
+                    <span class="bill-method-label" id="bill-display-label">Add an M-Pesa number to pay for sessions and plans.</span>
                   </div>
                 </div>
-                <button type="button" class="bill-edit-btn" id="bill-edit-btn">Change</button>
+                <button type="button" class="bill-edit-btn" id="bill-edit-btn">Add / Change</button>
               </div>
               <form class="bill-method-form" id="bill-method-form" style="display:none;">
                 <label class="bill-form-label" for="bill-phone">M-Pesa phone number</label>
@@ -64,7 +64,7 @@
                   <input class="bill-phone-input" type="tel" id="bill-phone" placeholder="712 345 678" pattern="[0-9]{9,10}" required>
                 </div>
                 <div class="bill-form-actions">
-                  <button type="submit" class="bill-save-btn">Save number</button>
+                  <button type="submit" class="bill-save-btn" id="bill-save-btn">Save number</button>
                   <button type="button" class="bill-cancel-btn" id="bill-cancel-btn">Cancel</button>
                 </div>
               </form>
@@ -72,36 +72,8 @@
 
             <section class="bill-card">
               <h2 class="bill-card-title">Billing history</h2>
-              <div class="bill-history">
-                <div class="bill-history-row">
-                  <div>
-                    <span class="bill-history-desc">Growth plan · Monthly</span>
-                    <span class="bill-history-date">Oct 1, 2025</span>
-                  </div>
-                  <span class="bill-history-amount">KES 7,500</span>
-                </div>
-                <div class="bill-history-row">
-                  <div>
-                    <span class="bill-history-desc">Lawyer session · Contract review</span>
-                    <span class="bill-history-date">Oct 15, 2025</span>
-                  </div>
-                  <span class="bill-history-amount">KES 2,500</span>
-                </div>
-                <div class="bill-history-row">
-                  <div>
-                    <span class="bill-history-desc">Growth plan · Monthly</span>
-                    <span class="bill-history-date">Sep 1, 2025</span>
-                  </div>
-                  <span class="bill-history-amount">KES 7,500</span>
-                </div>
-                <div class="bill-history-row">
-                  <div>
-                    <span class="bill-history-desc">Growth plan · Monthly</span>
-                    <span class="bill-history-date">Aug 1, 2025</span>
-                  </div>
-                  <span class="bill-history-amount">KES 7,500</span>
-                </div>
-              </div>
+              <div class="bill-history" id="bill-history"></div>
+              <div class="bill-empty-card" id="bill-history-empty" style="display:none">No transactions yet.</div>
             </section>
           </div>
 
@@ -131,8 +103,8 @@
 
             <div class="bill-card bill-spend-card">
               <span class="bill-spend-label">Total this month</span>
-              <span class="bill-spend-amount">KES 10,000</span>
-              <span class="bill-spend-breakdown">Plan KES 7,500 + Sessions KES 2,500</span>
+              <span class="bill-spend-amount" id="bill-total-month">KES 0</span>
+              <span class="bill-spend-breakdown" id="bill-total-breakdown">No charges yet.</span>
             </div>
           </div>
         </div>
@@ -144,6 +116,7 @@
   <script src="app-shell.js"></script>
   <script>
     (function() {
+      var API = 'http://localhost:8001';
       var accountBtn = document.getElementById('account-btn');
       var accountMenu = document.getElementById('account-menu');
       if (accountBtn && accountMenu) {
@@ -161,7 +134,82 @@
       var display = document.getElementById('bill-current-display');
       var form = document.getElementById('bill-method-form');
       var displayNumber = document.getElementById('bill-display-number');
+      var displayLabel = document.getElementById('bill-display-label');
       var phoneInput = document.getElementById('bill-phone');
+      var saveBtn = document.getElementById('bill-save-btn');
+      var historyEl = document.getElementById('bill-history');
+      var historyEmpty = document.getElementById('bill-history-empty');
+      var totalMonthEl = document.getElementById('bill-total-month');
+      var totalBreakdownEl = document.getElementById('bill-total-breakdown');
+
+      function maskMsisdn(msisdnDigits) {
+        // input e.g. 254712345678
+        var s = String(msisdnDigits || '');
+        if (s.length < 9) return 'Not set';
+        var local = s.startsWith('254') ? ('0' + s.slice(3)) : s;
+        return local.slice(0, 4) + ' •••• ' + local.slice(-2);
+      }
+
+      async function loadMpesa() {
+        var token = localStorage.getItem('fa_token');
+        var res = await fetch(API + '/api/billing/mpesa', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) return;
+        var data = await res.json();
+        if (data && data.msisdn) {
+          displayNumber.textContent = maskMsisdn(data.msisdn);
+          if (displayLabel) displayLabel.textContent = 'Active M-Pesa number';
+        } else {
+          displayNumber.textContent = 'Not set';
+          if (displayLabel) displayLabel.textContent = 'Add an M-Pesa number to pay for sessions and plans.';
+        }
+      }
+
+      function renderTransactions(txs) {
+        if (!historyEl) return;
+        historyEl.innerHTML = '';
+
+        if (!txs || !txs.length) {
+          if (historyEmpty) historyEmpty.style.display = '';
+          if (totalMonthEl) totalMonthEl.textContent = 'KES 0';
+          if (totalBreakdownEl) totalBreakdownEl.textContent = 'No charges yet.';
+          return;
+        }
+
+        if (historyEmpty) historyEmpty.style.display = 'none';
+
+        var now = new Date();
+        var monthTotal = 0;
+        txs.forEach(function(tx) {
+          var dt = new Date(tx.created_at);
+          if (dt.getFullYear() === now.getFullYear() && dt.getMonth() === now.getMonth()) {
+            monthTotal += Number(tx.amount_kes || 0);
+          }
+          var row = document.createElement('div');
+          row.className = 'bill-history-row';
+          row.innerHTML =
+            '<div>' +
+              '<span class="bill-history-desc">' + tx.description + '</span>' +
+              '<span class="bill-history-date">' + dt.toDateString() + '</span>' +
+            '</div>' +
+            '<span class="bill-history-amount">KES ' + Number(tx.amount_kes || 0).toLocaleString() + '</span>';
+          historyEl.appendChild(row);
+        });
+
+        if (totalMonthEl) totalMonthEl.textContent = 'KES ' + monthTotal.toLocaleString();
+        if (totalBreakdownEl) totalBreakdownEl.textContent = 'Based on your transaction history.';
+      }
+
+      async function loadTransactions() {
+        var token = localStorage.getItem('fa_token');
+        var res = await fetch(API + '/api/billing/transactions', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) return;
+        var txs = await res.json();
+        renderTransactions(txs);
+      }
 
       if (editBtn && form) {
         editBtn.addEventListener('click', function() {
@@ -176,15 +224,36 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           var val = phoneInput.value.replace(/\s/g, '');
-          if (val.length >= 9) {
-            var masked = val.slice(0, 3) + ' \u2022\u2022\u2022\u2022 ' + val.slice(-2);
-            displayNumber.textContent = '0' + masked;
+          if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+          var token = localStorage.getItem('fa_token');
+          fetch(API + '/api/billing/mpesa', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ msisdn: val })
+          }).then(function(res) {
+            return res.json().then(function(data) {
+              if (!res.ok) throw new Error((data && data.detail) || 'Save failed');
+              return data;
+            });
+          }).then(function(data) {
+            displayNumber.textContent = maskMsisdn(data.msisdn);
+            if (displayLabel) displayLabel.textContent = 'Active M-Pesa number';
             form.style.display = 'none';
             display.style.display = 'flex';
             phoneInput.value = '';
-          }
+          }).catch(function(err) {
+            alert(err.message);
+          }).finally(function() {
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save number'; }
+          });
         });
       }
+
+      loadMpesa();
+      loadTransactions();
     })();
   </script>
 </body>

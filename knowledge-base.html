@@ -58,6 +58,7 @@
         </div>
 
         <div class="kb-files" id="kb-files-list"></div>
+        <div class="kb-empty-card" id="kb-empty" style="display:none">No documents yet. Upload a PDF to build your Knowledge Base.</div>
       </div>
     </main>
   </div>
@@ -85,6 +86,7 @@
       var uploadLabel = document.getElementById('kb-upload-label');
       var uploadText = document.getElementById('kb-upload-text');
       var statusEl = document.getElementById('kb-status');
+      var emptyEl = document.getElementById('kb-empty');
       var isUploading = false;
       var originalUploadText = uploadText ? uploadText.textContent : 'Upload files';
       var currentDocs = [];
@@ -113,13 +115,23 @@
         setStatus(on ? 'Uploading & indexing your PDF… this can take a moment.' : '');
       }
 
-      function renderDocs(docs) {
+      function renderDocs(docs, opts) {
         if (!filesList) return;
-        currentDocs = Array.isArray(docs) ? docs : [];
+        opts = opts || {};
+        docs = Array.isArray(docs) ? docs : [];
+
+        // Avoid flicker: if server briefly returns an empty list while we already
+        // have docs on screen (e.g., during backend reload), keep current docs.
+        if (!opts.force && docs.length === 0 && currentDocs && currentDocs.length) {
+          if (emptyEl) emptyEl.style.display = 'none';
+          return;
+        }
+
+        currentDocs = docs;
         try { localStorage.setItem(DOCS_CACHE_KEY, JSON.stringify(currentDocs)); } catch(e) {}
 
         filesList.innerHTML = '';
-        (docs || []).forEach(function(doc) {
+        (currentDocs || []).forEach(function(doc) {
           var item = document.createElement('div');
           item.className = 'kb-file-item';
           item.setAttribute('data-doc-id', doc.id);
@@ -132,6 +144,8 @@
             '<button type="button" class="kb-file-remove" aria-label="Remove file" title="Remove"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
           filesList.appendChild(item);
         });
+
+        if (emptyEl) emptyEl.style.display = currentDocs.length ? 'none' : '';
       }
 
       function renderPending(files) {
@@ -219,7 +233,10 @@
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token }
           });
-          if (res.ok) item.remove();
+          if (res.ok) {
+            currentDocs = (currentDocs || []).filter(function(d) { return d.id !== docId; });
+            renderDocs(currentDocs, { force: true });
+          }
         });
       }
 
@@ -243,7 +260,7 @@
 
       // Render cached docs immediately to avoid flicker
       var cached = safeParse(localStorage.getItem(DOCS_CACHE_KEY) || '[]', []);
-      if (Array.isArray(cached) && cached.length) renderDocs(cached);
+      if (Array.isArray(cached) && cached.length) renderDocs(cached, { force: true });
       fetchDocs();
     })();
   </script>
