@@ -2243,6 +2243,193 @@ body.nav-drawer-open {
   width: 100%;
 }
 
+/* Lawyer dashboard */
+.lawyer-db-header {
+  margin-bottom: 1.5rem;
+}
+
+.lawyer-db-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.lawyer-db-lead {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.lawyer-db-welcome {
+  margin-bottom: 1.25rem;
+}
+
+.lawyer-db-welcome a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.lawyer-db-welcome a:hover {
+  text-decoration: underline;
+}
+
+/* Lawyer earnings page */
+.le-page {
+  padding: var(--space-lg) var(--space) var(--space-xl);
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.le-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.le-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.le-card-tint {
+  background: #f8fafc;
+}
+
+.le-card-label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.le-card-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.le-card-balance .le-withdraw-btn {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+
+.le-card-balance .le-withdraw-btn:active {
+  transform: scale(0.98);
+}
+
+.le-card-payment .le-card-payment-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+.le-card-payment .le-update-btn {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+
+.le-mpesa-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.le-card-payment-number {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.le-history-section {
+  margin-bottom: 1.5rem;
+}
+
+.le-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.le-history-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  overflow-x: auto;
+}
+
+.le-history-table {
+  display: flex;
+  flex-direction: column;
+  min-width: 520px;
+}
+
+.le-history-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.le-history-row:last-child {
+  border-bottom: none;
+}
+
+.le-history-header {
+  background: var(--bg-secondary, #f8fafc);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.le-history-amount {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.le-history-amount-out {
+  color: var(--text-muted);
+}
+
+.le-history-status {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.le-status-paid {
+  color: #059669;
+}
+
+.le-status-pending {
+  color: #d97706;
+}
+
+@media (max-width: 640px) {
+  .le-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* One rectangular KPI card divided into 4 sections with slightly different colours */
 .db-kpis-card {
   display: grid;

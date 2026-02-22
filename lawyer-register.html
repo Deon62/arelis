@@ -138,9 +138,7 @@
       if (form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
-          alert('Thank you for your application. We will review your details and contact you within 48 hours.');
-          form.reset();
-          if (fileText) fileText.textContent = 'Choose file';
+          window.location.href = 'lawyer-dashboard.html';
         });
       }
     })();

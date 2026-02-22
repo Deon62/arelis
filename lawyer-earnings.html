@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earnings – Lawyer – The Foundry Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ai-page">
+  <div class="ai-app">
+    <button type="button" class="ai-sidebar-toggle" id="ai-sidebar-toggle" aria-label="Open menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-inner">
+        <nav class="ai-panel-nav">
+          <a href="lawyer-dashboard.html">Dashboard</a>
+          <a href="ai.html">AI</a>
+          <a href="lawyer-my-sessions.html">My sessions</a>
+          <a href="lawyer-earnings.html" class="ai-panel-nav-active">Earnings</a>
+          <a href="lawyer-availability.html">Availability</a>
+          <a href="lawyer-ai-training.html">AI training</a>
+        </nav>
+      </div>
+      <div class="ai-sidebar-account" id="sidebar-account">
+        <button type="button" class="ai-account-btn" id="account-btn" aria-label="Account menu">
+          <span class="ai-account-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="ai-account-name">Lawyer account</span>
+        </button>
+        <div class="ai-account-menu" id="account-menu">
+          <a href="index.html" class="ai-account-menu-item">Home</a>
+          <a href="#" class="ai-account-menu-item ai-account-logout" data-action="logout">Log out</a>
+        </div>
+      </div>
+    </aside>
+    <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
+    <main class="ai-main">
+      <div class="le-page">
+        <div class="le-cards-grid">
+          <div class="le-card le-card-balance">
+            <span class="le-card-label">Available balance</span>
+            <span class="le-card-value" id="le-balance-amount">KES 18,500</span>
+            <button type="button" class="le-withdraw-btn btn btn-primary" id="le-withdraw-btn">Withdraw</button>
+          </div>
+          <div class="le-card le-card-payment le-card-tint">
+            <span class="le-card-label">Payment method</span>
+            <div class="le-card-payment-inner">
+              <img src="assets/mpesa.png" alt="M-Pesa" class="le-mpesa-logo">
+              <span class="le-card-payment-number">0712 •••• 89</span>
+            </div>
+            <button type="button" class="le-update-btn btn btn-primary" id="le-update-payment-btn">Update</button>
+          </div>
+        </div>
+
+        <section class="le-history-section">
+          <h2 class="le-section-title">Transaction history</h2>
+          <div class="le-history-card">
+            <div class="le-history-table">
+              <div class="le-history-row le-history-header">
+                <span>Date</span>
+                <span>Description</span>
+                <span>Amount</span>
+                <span>Status</span>
+              </div>
+              <div class="le-history-row">
+                <span>2 Dec 2025</span>
+                <span>Session · Employment review</span>
+                <span class="le-history-amount">+ KES 2,500</span>
+                <span class="le-history-status le-status-paid">Paid</span>
+              </div>
+              <div class="le-history-row">
+                <span>28 Nov 2025</span>
+                <span>Session · Contract drafting</span>
+                <span class="le-history-amount">+ KES 2,500</span>
+                <span class="le-history-status le-status-paid">Paid</span>
+              </div>
+              <div class="le-history-row">
+                <span>21 Nov 2025</span>
+                <span>Session · Compliance Q&amp;A</span>
+                <span class="le-history-amount">+ KES 2,500</span>
+                <span class="le-history-status le-status-paid">Paid</span>
+              </div>
+              <div class="le-history-row">
+                <span>14 Nov 2025</span>
+                <span>Session · Company registration</span>
+                <span class="le-history-amount">+ KES 2,500</span>
+                <span class="le-history-status le-status-pending">Pending</span>
+              </div>
+              <div class="le-history-row">
+                <span>7 Nov 2025</span>
+                <span>Payout to M-Pesa</span>
+                <span class="le-history-amount le-history-amount-out">− KES 7,500</span>
+                <span class="le-history-status le-status-paid">Completed</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="app-shell.js" defer></script>
+  <script>
+    (function() {
+      var accountBtn = document.getElementById('account-btn');
+      var accountMenu = document.getElementById('account-menu');
+      if (accountBtn && accountMenu) {
+        accountBtn.addEventListener('click', function(e) { e.stopPropagation(); accountMenu.classList.toggle('is-open'); });
+        document.addEventListener('click', function() { accountMenu.classList.remove('is-open'); });
+      }
+      document.querySelectorAll('[data-action="logout"]').forEach(function(el) {
+        el.addEventListener('click', function(e) { e.preventDefault(); localStorage.removeItem('fa_token'); localStorage.removeItem('fa_user'); window.location.href = 'index.html'; });
+      });
+
+      var withdrawBtn = document.getElementById('le-withdraw-btn');
+      if (withdrawBtn) withdrawBtn.addEventListener('click', function() { alert('Withdraw will be connected to M-Pesa. Coming soon.'); });
+      var updatePaymentBtn = document.getElementById('le-update-payment-btn');
+      if (updatePaymentBtn) updatePaymentBtn.addEventListener('click', function() { window.location.href = 'billing.html'; });
+    })();
+  </script>
+</body>
+</html>
