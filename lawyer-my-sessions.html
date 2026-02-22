@@ -38,9 +38,64 @@
     </aside>
     <div class="ai-sidebar-overlay" id="ai-sidebar-overlay" aria-hidden="true"></div>
     <main class="ai-main">
-      <div class="db lawyer-db">
-        <h1 class="lawyer-db-title">My sessions</h1>
-        <p class="lawyer-db-lead">Scheduled and past client sessions will appear here. This page will be built next.</p>
+      <div class="lms-page">
+        <section class="lms-card">
+          <h2 class="lms-card-title">Bookings</h2>
+          <div class="lms-table-wrap">
+            <div class="lms-table" id="lms-bookings-table">
+              <div class="lms-row lms-header">
+                <span>Topic</span>
+                <span>Client · Date &amp; time</span>
+                <span>Action</span>
+              </div>
+              <div class="lms-row" data-id="1">
+                <span>Contract review</span>
+                <span>John M. · Wed, 11 Dec 2025 · 10:00 AM</span>
+                <button type="button" class="lms-btn-accept btn btn-dark">Accept</button>
+              </div>
+              <div class="lms-row" data-id="2">
+                <span>Employment law</span>
+                <span>Sarah K. · Fri, 13 Dec 2025 · 2:00 PM</span>
+                <button type="button" class="lms-btn-accept btn btn-dark">Accept</button>
+              </div>
+              <div class="lms-row" data-id="3">
+                <span>Company registration</span>
+                <span>David O. · Mon, 16 Dec 2025 · 9:00 AM</span>
+                <button type="button" class="lms-btn-accept btn btn-dark">Accept</button>
+              </div>
+            </div>
+          </div>
+          <div class="lms-empty" id="lms-bookings-empty" style="display:none">No pending bookings.</div>
+        </section>
+
+        <section class="lms-card">
+          <h2 class="lms-card-title">Past bookings</h2>
+          <div class="lms-table-wrap">
+            <div class="lms-table" id="lms-past-table">
+              <div class="lms-row lms-header">
+                <span>Topic</span>
+                <span>Client · Date &amp; time</span>
+                <span>Status</span>
+              </div>
+              <div class="lms-row">
+                <span>Compliance Q&amp;A</span>
+                <span>Grace W. · 2 Dec 2025 · 11:00 AM</span>
+                <span class="lms-status">Completed</span>
+              </div>
+              <div class="lms-row">
+                <span>NDA drafting</span>
+                <span>James N. · 28 Nov 2025 · 3:00 PM</span>
+                <span class="lms-status">Completed</span>
+              </div>
+              <div class="lms-row">
+                <span>Shareholder agreement</span>
+                <span>Mary L. · 21 Nov 2025 · 10:00 AM</span>
+                <span class="lms-status">Completed</span>
+              </div>
+            </div>
+          </div>
+          <div class="lms-empty" id="lms-past-empty" style="display:none">No past sessions yet.</div>
+        </section>
       </div>
     </main>
   </div>
@@ -55,6 +110,19 @@
       }
       document.querySelectorAll('[data-action="logout"]').forEach(function(el) {
         el.addEventListener('click', function(e) { e.preventDefault(); localStorage.removeItem('fa_token'); localStorage.removeItem('fa_user'); window.location.href = 'index.html'; });
+      });
+
+      document.querySelectorAll('.lms-btn-accept').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var row = this.closest('.lms-row:not(.lms-header)');
+          if (row) {
+            row.remove();
+            var table = document.getElementById('lms-bookings-table');
+            if (table && !table.querySelectorAll('.lms-row:not(.lms-header)').length) {
+              document.getElementById('lms-bookings-empty').style.display = '';
+            }
+          }
+        });
       });
     })();
   </script>

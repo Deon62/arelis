@@ -2725,6 +2725,102 @@ body.nav-drawer-open {
   }
 }
 
+/* Lawyer my sessions page — same style as transaction history card */
+.lms-page {
+  padding: var(--space-lg) var(--space) var(--space-xl);
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lms-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.lms-card:last-child {
+  margin-bottom: 0;
+}
+
+.lms-card-title {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.lms-table-wrap {
+  min-width: 0;
+}
+
+.lms-table {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.lms-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border);
+  margin: 0 -1.5rem;
+}
+
+.lms-row:last-child {
+  border-bottom: none;
+}
+
+.lms-header {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lms-status {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #059669;
+}
+
+.lms-btn-accept {
+  padding: 0.4rem 1rem;
+  font-size: 0.8125rem;
+  justify-self: start;
+}
+
+.lms-empty {
+  margin: 0 -1.5rem 0;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 560px) {
+  .lms-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 1rem;
+  }
+  .lms-row span:first-child { grid-column: 1; }
+  .lms-row span:nth-child(2) { grid-column: 2; grid-row: 1 / 3; }
+  .lms-row .lms-btn-accept,
+  .lms-row .lms-status { grid-column: 1; }
+  .lms-header span:nth-child(2) { grid-row: 1; }
+}
+
 /* One rectangular KPI card divided into 4 sections with slightly different colours */
 .db-kpis-card {
   display: grid;
